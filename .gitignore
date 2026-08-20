@@ -1,0 +1,15 @@
+# Java
+*.class
+
+# BlueJ
+*.ctxt
+package.bluej
+bluej.pkg
+doc/
+
+# Archivos comprimidos
+*.zip
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
