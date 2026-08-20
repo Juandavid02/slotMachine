@@ -1,6 +1,6 @@
 # Slot Machine Simulator - DOPO (Ciclo 1)
 
-Simulador interactivo de máquina tragamonedas orientado a objetos, desarrollado en **Java / BlueJ** como parte del curso **Desarrollo Orientado por Objetos (DOPO-POOB)** en la **Escuela Colombiana de Ingeniería Julio Garavito** (Periodo 2026-2).
+Simulador interactivo de máquina tragamonedas orientado a objetos, desarrollado en **Java / BlueJ** como parte del curso **Desarrollo Orientado por Objetos (DOPO-POOB)** en la **Escuela Colombiana de Ingeniería Julio Garavito** (Periodo 2026-3).
 
 Este proyecto toma como inspiración inicial el *Problem I: Slot Machine* de la Maratón Internacional de Programación 2025, centrándose en esta primera etapa en la **construcción y simulación visual y lógica del sistema**, garantizando **extensibilidad** y reutilización del paquete gráfico `shapes`.
 
