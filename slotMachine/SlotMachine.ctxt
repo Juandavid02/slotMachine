@@ -1,0 +1,12 @@
+#BlueJ class context
+#Wed Aug 19 21:28:56 COT 2026
+comment0.target=SlotMachine
+comment1.target=SlotMachine()
+comment1.text=\r\n Constructor for objects of class SlotMachine\r\n
+comment2.params=pos
+comment2.target=void addWheel(int)
+comment2.text=\r\n \r\n
+comment3.params=pos
+comment3.target=void delWheel(int)
+comment3.text=\r\n \r\n
+numComments=4
