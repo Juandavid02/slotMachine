@@ -5,6 +5,7 @@
  * @author (your name) 
  * @version (a version number or a date)
  */
+import java.util.Random;
 
 public class Wheel
 {
@@ -14,9 +15,14 @@ public class Wheel
     private int currentX;
     private int currentY;
     
-    public Wheel()
+    public Wheel(int cantSymbols)
     {
-        visibleIndex = 0;
+        Random random = new Random();
+        if (cantSymbols > 0){
+            visibleIndex = random.nextInt(cantSymbols);
+        } else {
+            visibleIndex = 0;
+        }
         wheelFigure = new Rectangle();
         symbolFigure = new Circle();
         wheelFigure.changeSize(70, 70);
@@ -36,9 +42,11 @@ public class Wheel
         visibleIndex = index;
     }
     
-    public void makeVisible(){
+    public void makeVisible(boolean flag){
         wheelFigure.makeVisible();
-        symbolFigure.makeVisible();
+        if (flag){
+            symbolFigure.makeVisible();
+        }
     }
     
     public void changeColor(String color){
