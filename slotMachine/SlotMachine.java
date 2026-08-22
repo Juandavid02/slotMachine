@@ -2,11 +2,11 @@ import java.util.List;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import java.util.Random;
-
 /**
- * A slot machine that can contain multiple wheels and symbols.
- * The wheels can be spun randomly or configured to display
- * specific symbols. The machine can also detect when a jackpot occurs.
+ * Una máquina tragamonedas que puede contener múltiples ruedas y símbolos.
+ * Las ruedas pueden girarse aleatoriamente o configurarse para mostrar
+ * símbolos específicos. La máquina también puede detectar cuando ocurre
+ * un jackpot.
  *
  * @author Juan David Rojas and César Morales
  * @version 1.0 (22 August 2026)
@@ -19,6 +19,7 @@ public class SlotMachine
     private boolean ok;
     private Random random;
     private Rectangle machine;
+    // Variables constantes para dejar espacio tanto arriba como a la derecha
     private static final int MARGIN_X = 30;
     private static final int MARGIN_Y = 30;
     
@@ -45,12 +46,11 @@ public class SlotMachine
     }
     
     /**
-     * Add a new wheel to the slot machine at the specified position.
-     * If the position is greater than the number of wheels, the wheel is
-     * added at the end. If the position is less than one, it is added
-     * at the beginning.
+     * Agrega una nueva rueda a la máquina tragamonedas en la posición indicada.
+     * Si la posición es mayor que el número de ruedas, la rueda se agrega
+     * al final. Si la posición es menor que uno, se agrega al principio.
      *
-     * @param pos the desired position for the new wheel
+     * @param pos la posición deseada para la nueva rueda
      */
     public void addWheel(int pos)
     {   
@@ -71,12 +71,12 @@ public class SlotMachine
     }
     
     /**
-     * Remove a wheel from the slot machine at the specified position.
-     * If the position is less than one, the first wheel is removed.
-     * If the position is greater than the number of wheels, the last
-     * wheel is removed.
+     * Elimina una rueda de la máquina tragamonedas en la posición indicada.
+     * Si la posición es menor que uno, se elimina la primera rueda.
+     * Si la posición es mayor que el número de ruedas, se elimina la última
+     * rueda.
      *
-     * @param pos the desired position of the wheel to remove
+     * @param pos la posición de la rueda que se desea eliminar
      */
     public void delWheel(int pos)
     {   
@@ -104,19 +104,17 @@ public class SlotMachine
         makeVisible();
     }
     
-    
     /**
-     * Add a new symbol to the slot machine at the specified position.
-     * The symbol is only added if it does not already exist.
-     * If the position is greater than the number of symbols, it is added
-     * at the end. If the position is less than or equal to one, it is
-     * added at the beginning.
+     * Agrega un nuevo símbolo a la máquina tragamonedas en la posición indicada.
+     * El símbolo solo se agrega si no existe previamente.
+     * Si la posición es mayor que el número de símbolos, se agrega al final.
+     * Si la posición es menor o igual a uno, se agrega al principio.
      *
-     * @param pos the desired position for the new symbol
-     * @param color the color of the symbol to add. Available colors are
-     * "red", "black", "blue", "yellow", "green", "white", "orange", and "cyan".
+     * @param pos la posición deseada para el nuevo símbolo
+     * @param color el color del símbolo que se desea agregar. Los colores
+     * disponibles son "red", "black", "blue", "yellow", "green", "white",
+     * "orange" y "cyan".
      */
-    
     public void addSymbol(int pos, String color)
     {
         if (!color.equals("red") &&
@@ -151,11 +149,11 @@ public class SlotMachine
     }
     
     /**
-     * Remove a symbol from the slot machine.
-     * If the specified symbol does not exist, the operation is not performed
-     * and an error message is displayed.
+     * Elimina un símbolo de la máquina tragamonedas.
+     * Si el símbolo indicado no existe, la operación no se realiza
+     * y se muestra un mensaje de error.
      *
-     * @param color the color of the symbol to remove
+     * @param color el color del símbolo que se desea eliminar
      */
     public void delSymbol(String color)
     {
@@ -166,15 +164,16 @@ public class SlotMachine
         makeVisible();
     }
     
-    /**
-     * Spin a specific wheel and set it to a randomly selected symbol.
-     * The wheel position is adjusted to the first or last wheel if the
-     * specified position is outside the valid range.
-     * @param wheel the position of the wheel to spin
+     /**
+     * Gira una rueda específica y la establece en un símbolo seleccionado
+     * aleatoriamente. La posición de la rueda se ajusta a la primera o
+     * última rueda si la posición indicada está fuera del rango válido.
+     *
+     * @param wheel la posición de la rueda que se desea girar
      */
-    // This method is private because it is an internal operation used by
-    // the slot machine when performing a spin and should not be called
-    // directly from outside the class.
+     // Este método es privado porque es una operación interna utilizada
+     // por la máquina tragamonedas al realizar un giro y no debe ser
+     // llamada directamente desde fuera de la clase.
     private void turnWheel(int wheel){
         if (wheel <= 1){
             wheel = 1;
@@ -182,16 +181,18 @@ public class SlotMachine
         if (wheel > wheels.size()){
             wheel = wheels.size();
         }
+        //.nextInt es un metodo de Random que genera un número entero aleatorio
+        // entre 0 (incluido) y symbols.size() (excluido). Este metodo fue consultado desde la API de JAVA
         int randomIndex = random.nextInt(symbols.size());
         wheels.get(wheel - 1).setVisibleIndex(randomIndex);
     }
     
     /**
-     * Spin the specified wheel of the slot machine.
-     * The wheel is set to a randomly selected symbol.
-     * The operation is only performed if there are wheels and symbols available.
+     * Gira la rueda indicada de la máquina tragamonedas.
+     * La rueda se establece en un símbolo seleccionado aleatoriamente.
+     * La operación solo se realiza si hay ruedas y símbolos disponibles.
      *
-     * @param wheel the position of the wheel to spin
+     * @param wheel la posición de la rueda que se desea girar
      */
     public void spin(int wheel)
     {
@@ -209,9 +210,9 @@ public class SlotMachine
     }
     
     /**
-     * Spin all the wheels of the slot machine.
-     * Each wheel is set to a randomly selected symbol.
-     * The operation is only performed if there are wheels and symbols available.
+     * Gira todas las ruedas de la máquina tragamonedas.
+     * Cada rueda se establece en un símbolo seleccionado aleatoriamente.
+     * La operación solo se realiza si hay ruedas y símbolos disponibles.
      */
     public void spin()
     {
@@ -230,16 +231,15 @@ public class SlotMachine
         }
     }
     
-    
     /**
-     * Place a specific symbol on the specified wheel.
-     * The symbol must exist in the available symbols.
-     * If the wheel position is less than or equal to one, the first wheel
-     * is selected. If the position is greater than the number of wheels,
-     * the last wheel is selected.
+     * Coloca un símbolo específico en la rueda indicada.
+     * El símbolo debe existir entre los símbolos disponibles.
+     * Si la posición de la rueda es menor o igual a uno, se selecciona
+     * la primera rueda. Si la posición es mayor que el número de ruedas,
+     * se selecciona la última rueda.
      *
-     * @param wheel the position of the wheel where the symbol will be placed
-     * @param symbol the symbol to place on the wheel
+     * @param wheel la posición de la rueda donde se colocará el símbolo
+     * @param symbol el símbolo que se desea colocar en la rueda
      */
     public void placeSymbol(int wheel, String symbol)
     {
@@ -271,7 +271,14 @@ public class SlotMachine
 
     }
     
-    
+    /**
+     * Obtiene la configuración actual de la máquina tragamonedas.
+     * La configuración contiene el símbolo que se muestra actualmente
+     * en cada rueda, en el mismo orden de las ruedas.
+     *
+     * @return un arreglo que contiene el símbolo actual de cada rueda
+     */
+    //String[] es un arreglo con tamaño fijo accediendo con config[i]
     public String[] configuration()
     {
         String [] config = new String[wheels.size()];
@@ -282,16 +289,38 @@ public class SlotMachine
         return config;
     }
 
+    /**
+     * Obtiene todos los símbolos disponibles en la máquina tragamonedas.
+     *
+     * @return un arreglo que contiene todos los símbolos disponibles
+     */ 
+    // Uso de IA generativa para comprender el uso de toArray().
+    // Este método convierte la lista de símbolos en un arreglo de tipo String[].
     public String[] symbols()
     {
         return symbols.toArray(new String[symbols.size()]);
     }
     
+    /**
+     * Obtiene el número de símbolos diferentes disponibles en la máquina
+     * tragamonedas.
+     *
+     * @return el número de símbolos diferentes
+     */
     public int distinctSymbols()
     {
         return symbols.size();
     }
 
+    /**
+     * Comprueba si la máquina tragamonedas tiene un jackpot.
+     * Un jackpot ocurre cuando hay al menos dos ruedas y todas muestran
+     * el mismo símbolo. Si ocurre un jackpot, la máquina cambia su color
+     * a verde y muestra un mensaje de felicitación.
+     *
+     * @return true si todas las ruedas muestran el mismo símbolo y hay
+     * al menos dos ruedas; false en caso contrario
+     */
     public boolean isJackpot(){
         String [] config = configuration();
         if (wheels.size() < 2){
@@ -313,11 +342,22 @@ public class SlotMachine
         }
     }
     
+    /**
+     * Comprueba si la última operación fue exitosa.
+     *
+     * @return true si la última operación fue exitosa; false en caso contrario
+     */
     public boolean ok()
     {
         return ok;
     }
     
+    /**
+     * Hace visible la máquina tragamonedas y sus ruedas.
+     * El tamaño de la máquina se ajusta de acuerdo con el número de ruedas.
+     * Cada rueda se posiciona y se muestra con su símbolo actual.
+     * Si no hay símbolos disponibles, las ruedas se muestran sin un símbolo.
+     */
     public void makeVisible(){
         if (wheels.isEmpty()){
             machine.changeSize(120, 120);
@@ -340,6 +380,9 @@ public class SlotMachine
         }
     }
     
+    /**
+     * Hace invisible la máquina tragamonedas y todas sus ruedas.
+     */
     public void makeInvisible(){
         machine.makeInvisible();
         for (int i = 0; i < wheels.size(); i++){
