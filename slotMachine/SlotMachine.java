@@ -1,15 +1,16 @@
-
-/**
- * Write a description of class SlotMachine here.
- * 
- * @author (your name) 
- * @version (a version number or a date)
- */
 import java.util.List;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import java.util.Random;
 
+/**
+ * A slot machine that can contain multiple wheels and symbols.
+ * The wheels can be spun randomly or configured to display
+ * specific symbols. The machine can also detect when a jackpot occurs.
+ *
+ * @author Juan David Rojas and César Morales
+ * @version 1.0 (22 August 2026)
+ */
 public class SlotMachine
 {
     private List<Wheel> wheels; 
@@ -22,7 +23,11 @@ public class SlotMachine
     private static final int MARGIN_Y = 30;
     
     /**
-     * Constructor for objects of class SlotMachine
+     * Creates a new slot machine.
+     * Initializes the lists of reels and symbols, the random number generator,
+     * and the machine's graphical representation.
+     * Initially, the machine is visible, and the "last move" state indicates
+     * it has been shifted by an equal amount both horizontally and vertically.
      */
     public SlotMachine()
     {
@@ -39,9 +44,13 @@ public class SlotMachine
         makeVisible();
     }
     
-
     /**
-     * 
+     * Add a new wheel to the slot machine at the specified position.
+     * If the position is greater than the number of wheels, the wheel is
+     * added at the end. If the position is less than one, it is added
+     * at the beginning.
+     *
+     * @param pos the desired position for the new wheel
      */
     public void addWheel(int pos)
     {   
@@ -62,7 +71,12 @@ public class SlotMachine
     }
     
     /**
-     * 
+     * Remove a wheel from the slot machine at the specified position.
+     * If the position is less than one, the first wheel is removed.
+     * If the position is greater than the number of wheels, the last
+     * wheel is removed.
+     *
+     * @param pos the desired position of the wheel to remove
      */
     public void delWheel(int pos)
     {   
@@ -90,12 +104,37 @@ public class SlotMachine
         makeVisible();
     }
     
+    
+    /**
+     * Add a new symbol to the slot machine at the specified position.
+     * The symbol is only added if it does not already exist.
+     * If the position is greater than the number of symbols, it is added
+     * at the end. If the position is less than or equal to one, it is
+     * added at the beginning.
+     *
+     * @param pos the desired position for the new symbol
+     * @param color the color of the symbol to add. Available colors are
+     * "red", "black", "blue", "yellow", "green", "white", "orange", and "cyan".
+     */
+    
     public void addSymbol(int pos, String color)
     {
-        if (symbols.contains(color)){
+        if (!color.equals("red") &&
+            !color.equals("black") &&
+            !color.equals("blue") &&
+            !color.equals("yellow") &&
+            !color.equals("green") &&
+            !color.equals("white") &&
+            !color.equals("orange") &&
+            !color.equals("cyan")){
+            JOptionPane.showMessageDialog(null,
+                "Accion no permitida: El color no esta disponible.");
+            ok = false;
+        }
+        else if (symbols.contains(color)){
             JOptionPane.showMessageDialog(null, "Accion no permitida: El color ya se encuentra entre las opciones");
             ok = false;
-        } 
+        }        
         else {
                 if (pos > symbols.size()){
                     symbols.add(color);
@@ -111,6 +150,13 @@ public class SlotMachine
         makeVisible();
     }
     
+    /**
+     * Remove a symbol from the slot machine.
+     * If the specified symbol does not exist, the operation is not performed
+     * and an error message is displayed.
+     *
+     * @param color the color of the symbol to remove
+     */
     public void delSymbol(String color)
     {
         ok = symbols.remove(color);
@@ -120,6 +166,15 @@ public class SlotMachine
         makeVisible();
     }
     
+    /**
+     * Spin a specific wheel and set it to a randomly selected symbol.
+     * The wheel position is adjusted to the first or last wheel if the
+     * specified position is outside the valid range.
+     * @param wheel the position of the wheel to spin
+     */
+    // This method is private because it is an internal operation used by
+    // the slot machine when performing a spin and should not be called
+    // directly from outside the class.
     private void turnWheel(int wheel){
         if (wheel <= 1){
             wheel = 1;
@@ -131,6 +186,13 @@ public class SlotMachine
         wheels.get(wheel - 1).setVisibleIndex(randomIndex);
     }
     
+    /**
+     * Spin the specified wheel of the slot machine.
+     * The wheel is set to a randomly selected symbol.
+     * The operation is only performed if there are wheels and symbols available.
+     *
+     * @param wheel the position of the wheel to spin
+     */
     public void spin(int wheel)
     {
         if (symbols.isEmpty() || wheels.isEmpty()){
@@ -146,6 +208,11 @@ public class SlotMachine
         }
     }
     
+    /**
+     * Spin all the wheels of the slot machine.
+     * Each wheel is set to a randomly selected symbol.
+     * The operation is only performed if there are wheels and symbols available.
+     */
     public void spin()
     {
         if (symbols.isEmpty() || wheels.isEmpty()){
@@ -163,6 +230,17 @@ public class SlotMachine
         }
     }
     
+    
+    /**
+     * Place a specific symbol on the specified wheel.
+     * The symbol must exist in the available symbols.
+     * If the wheel position is less than or equal to one, the first wheel
+     * is selected. If the position is greater than the number of wheels,
+     * the last wheel is selected.
+     *
+     * @param wheel the position of the wheel where the symbol will be placed
+     * @param symbol the symbol to place on the wheel
+     */
     public void placeSymbol(int wheel, String symbol)
     {
         if (wheels.isEmpty()){
@@ -192,6 +270,7 @@ public class SlotMachine
         }
 
     }
+    
     
     public String[] configuration()
     {
@@ -268,7 +347,4 @@ public class SlotMachine
         }
         
     }
-}
-
-
-    
+}    
