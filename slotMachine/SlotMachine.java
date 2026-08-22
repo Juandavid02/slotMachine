@@ -180,7 +180,7 @@ public class SlotMachine
                 if (wheel <= 1 ){
                     wheel = 1;
                 }
-                if (wheel > wheels.size()){
+                else if (wheel > wheels.size()){
                     wheel = wheels.size();
                 }
                 wheels.get(wheel-1).setVisibleIndex(index);
@@ -193,7 +193,7 @@ public class SlotMachine
 
     }
     
-    public String [] configuration()
+    public String[] configuration()
     {
         String [] config = new String[wheels.size()];
         for (int i = 0; i < wheels.size(); i++){
@@ -218,7 +218,7 @@ public class SlotMachine
         if (wheels.size() < 2){
             return false;
         }
-        if (config.length > 0){
+        else if (config.length > 0){
             for (int i=1; i < config.length; i++){
                 if (!config[i].equals(config[0])){
                     return false;
