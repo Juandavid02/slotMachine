@@ -66,4 +66,9 @@ public class Wheel
         currentX = x;
         currentY = y;
     }
+    
+    public void makeInvisible(){
+        wheelFigure.makeInvisible();
+        symbolFigure.makeInvisible();
+    }
 }

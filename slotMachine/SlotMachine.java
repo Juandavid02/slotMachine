@@ -32,7 +32,7 @@ public class SlotMachine
         ok = true;
         random = new Random();
         machine = new Rectangle();
-        machine.changeColor("black");
+        machine.changeColor("gray");
         machine.changeSize(120, 120);
         machine.moveHorizontal(MARGIN_X);
         machine.moveVertical(MARGIN_Y);
@@ -68,14 +68,17 @@ public class SlotMachine
     {   
         if (!wheels.isEmpty()){
             if (pos < 1 ){
-                JOptionPane.showMessageDialog(null, "Se elimino la primera rueda");
+                wheels.get(0).makeInvisible();
                 wheels.remove(0);
+                JOptionPane.showMessageDialog(null, "Se elimino la primera rueda");
             }
             else if (pos > wheels.size()){
+                wheels.get(wheels.size() - 1).makeInvisible();                
                 wheels.remove(wheels.size() - 1);
                 JOptionPane.showMessageDialog(null, "Se elimino la ultima rueda");
             }
             else{
+                wheels.get(pos - 1).makeInvisible();
                 wheels.remove(pos - 1);
             }
             ok = true;
@@ -138,7 +141,9 @@ public class SlotMachine
             turnWheel(wheel);
             ok = true;
         }
-        makeVisible();        
+        if (!isJackpot()){
+                makeVisible();
+        }
     }
     
     public void spin()
@@ -151,7 +156,9 @@ public class SlotMachine
            for (int i = 1; i <= wheels.size(); i++){
                 turnWheel(i);
             }
-            makeVisible();
+            if (!isJackpot()){
+                makeVisible();
+            }
             ok = true;
         }
     }
@@ -161,6 +168,7 @@ public class SlotMachine
         if (wheels.isEmpty()){
             ok = false;
             JOptionPane.showMessageDialog(null, "Accion no permitida: No hay ruletas.");
+            makeVisible();
         }
         else {
             int index = symbols.indexOf(symbol);
@@ -177,9 +185,12 @@ public class SlotMachine
                 }
                 wheels.get(wheel-1).setVisibleIndex(index);
                 ok = true;
+                if (!isJackpot()){
+                    makeVisible();
+                }
             }
         }
-        makeVisible();
+
     }
     
     public String [] configuration()
@@ -204,14 +215,18 @@ public class SlotMachine
 
     public boolean isJackpot(){
         String [] config = configuration();
+        if (wheels.size() < 2){
+            return false;
+        }
         if (config.length > 0){
             for (int i=1; i < config.length; i++){
                 if (!config[i].equals(config[0])){
                     return false;
                 }
             }
+            machine.changeColor("green");
+            makeVisible();
             JOptionPane.showMessageDialog(null, "¡FELICIDADES HAS GANADO!");
-            machine.changeColor("gray");
             return true;
         }
         else{
@@ -244,6 +259,14 @@ public class SlotMachine
                 }
             }
         }
+    }
+    
+    public void makeInvisible(){
+        machine.makeInvisible();
+        for (int i = 0; i < wheels.size(); i++){
+            wheels.get(i).makeInvisible();
+        }
+        
     }
 }
 
