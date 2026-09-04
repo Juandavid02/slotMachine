@@ -10,6 +10,7 @@ public class Wheel
     private int visibleIndex;
     private Rectangle wheelFigure;
     private Circle symbolFigure;
+    private boolean locked;
     private int currentX;
     private int currentY;
      /**
@@ -29,6 +30,7 @@ public class Wheel
         } else {
             visibleIndex = 0;
         }
+        locked = false;
         wheelFigure = new Rectangle();
         symbolFigure = new Circle();
         wheelFigure.changeSize(70, 70);
@@ -101,5 +103,17 @@ public class Wheel
     public void makeInvisible(){
         wheelFigure.makeInvisible();
         symbolFigure.makeInvisible();
+    }
+    /**
+     * 
+     */
+    public boolean isLocked(){
+        return locked;
+    }
+    /**
+     * 
+     */
+    public void setLocked(boolean value){
+        locked=value;
     }
 }
