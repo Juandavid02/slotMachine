@@ -19,9 +19,15 @@ public class SlotMachine
     private boolean ok;
     private Random random;
     private Rectangle machine;
+    private Rectangle brazoHorizontal;
+    private Rectangle brazoVertical;
+    private Circle perilla;
+    private boolean girada;
     // Variables constantes para dejar espacio tanto arriba como a la derecha
-    private static final int MARGIN_X = 30;
+    private static final int MARGIN_X = 60;
     private static final int MARGIN_Y = 30;
+    private static final int GAP = 25;
+    private static final int WHEEL_WIDTH = 70;
     
     /**
      * Creates a new slot machine.
@@ -37,12 +43,35 @@ public class SlotMachine
         visible = true;
         ok = true;
         random = new Random();
+        girada = false;
+
         machine = new Rectangle();
         machine.changeColor("gray");
         machine.changeSize(120, 120);
         machine.moveHorizontal(MARGIN_X);
         machine.moveVertical(MARGIN_Y);
+        
+        brazoVertical = new Rectangle();
+        brazoVertical.changeColor("gray");
+        brazoVertical.changeSize(100, 15);             
+        brazoVertical.moveHorizontal(MARGIN_X - 30);   
+        brazoVertical.moveVertical(MARGIN_Y + 10);
+        
+        brazoHorizontal = new Rectangle();
+        brazoHorizontal.changeColor("gray");
+        brazoHorizontal.changeSize(15, 30);            
+        brazoHorizontal.moveHorizontal(MARGIN_X - 30);
+        brazoHorizontal.moveVertical(MARGIN_Y + 95);
+
+        perilla = new Circle();
+        perilla.changeColor("red");
+        perilla.changeSize(30);
+        perilla.moveHorizontal(MARGIN_X - 38);
+        perilla.moveVertical(MARGIN_Y);
+
         makeVisible();
+        
+
     }
     
     /**
@@ -134,15 +163,15 @@ public class SlotMachine
             ok = false;
         }        
         else {
-                if (pos > symbols.size()){
-                    symbols.add(color);
-                }
-                else if (pos <= 1){
-                    symbols.add(0, color);
-                }
-                else {
-                    symbols.add(pos - 1, color);
-                }
+            if (pos > symbols.size()){
+                symbols.add(color);
+            }
+            else if (pos <= 1){
+                symbols.add(0, color);
+            }
+            else {
+                symbols.add(pos - 1, color);
+            }
             ok = true;
         }
         makeVisible();
@@ -203,6 +232,7 @@ public class SlotMachine
         else{
             turnWheel(wheel);
             ok = true;
+            girada = true;
         }
         if (!isJackpot()){
                 makeVisible();
@@ -224,10 +254,11 @@ public class SlotMachine
            for (int i = 1; i <= wheels.size(); i++){
                 turnWheel(i);
             }
+            girada = true;
+            ok = true;
             if (!isJackpot()){
                 makeVisible();
             }
-            ok = true;
         }
     }
     
@@ -263,6 +294,7 @@ public class SlotMachine
                 }
                 wheels.get(wheel-1).setVisibleIndex(index);
                 ok = true;
+                girada = true;
                 if (!isJackpot()){
                     makeVisible();
                 }
@@ -323,7 +355,7 @@ public class SlotMachine
      */
     public boolean isJackpot(){
         String [] config = configuration();
-        if (wheels.size() < 2){
+        if (!girada || wheels.size() < 2 || symbols.size() < 2){
             return false;
         }
         else if (config.length > 0){
@@ -333,6 +365,9 @@ public class SlotMachine
                 }
             }
             machine.changeColor("green");
+            brazoHorizontal.changeColor("green");
+            brazoVertical.changeColor("green");
+            perilla.changeColor("yellow");
             makeVisible();
             JOptionPane.showMessageDialog(null, "¡FELICIDADES HAS GANADO!");
             return true;
@@ -352,42 +387,52 @@ public class SlotMachine
         return ok;
     }
     
-    /**
-     * Hace visible la máquina tragamonedas y sus ruedas.
-     * El tamaño de la máquina se ajusta de acuerdo con el número de ruedas.
-     * Cada rueda se posiciona y se muestra con su símbolo actual.
-     * Si no hay símbolos disponibles, las ruedas se muestran sin un símbolo.
-     */
-    public void makeVisible(){
+    
+    private void actualizar(){
         if (wheels.isEmpty()){
             machine.changeSize(120, 120);
-            machine.makeVisible();
         }
         else {
-            machine.changeSize(120, 120*wheels.size());
-            machine.makeVisible();
+            int anchoTotal = GAP * (wheels.size() + 1) + WHEEL_WIDTH * wheels.size();
+            machine.changeSize(120, anchoTotal);
             for (int i=0; i < wheels.size(); i++){
-                wheels.get(i).setPosition(MARGIN_X + ((i+1)*25)+(i*25)+(i*70), MARGIN_Y+25);
+                wheels.get(i).setPosition(MARGIN_X + GAP + i * (WHEEL_WIDTH + GAP), MARGIN_Y + 25);
                 if (!symbols.isEmpty()){
                     int idx = wheels.get(i).getVisibleIndex();
                     wheels.get(i).changeColor(symbols.get(idx));
-                    wheels.get(i).makeVisible(true);
-                }
-                else{
-                    wheels.get(i).makeVisible(false);
                 }
             }
         }
-    }
     
-    /**
-     * Hace invisible la máquina tragamonedas y todas sus ruedas.
-     */
-    public void makeInvisible(){
-        machine.makeInvisible();
-        for (int i = 0; i < wheels.size(); i++){
-            wheels.get(i).makeInvisible();
+        if (visible){
+            machine.makeVisible();
+            brazoVertical.makeVisible();
+            brazoHorizontal.makeVisible();
+            perilla.makeVisible();
+            for (int i=0; i < wheels.size(); i++){
+                wheels.get(i).makeVisible(!symbols.isEmpty());
+            }
         }
+        else {
+            machine.makeInvisible();
+            brazoVertical.makeInvisible();
+            brazoHorizontal.makeInvisible();
+            perilla.makeInvisible();
+            for (int i=0; i < wheels.size(); i++){
+                wheels.get(i).makeInvisible();
+            }
+        }
+    }
+
+    public void makeVisible(){
+        visible = true;
+        actualizar();
         
     }
-}    
+    
+    public void makeInvisible(){
+        visible = false;
+        actualizar();
+    }
+    
+}
