@@ -69,7 +69,7 @@ public class SlotMachine
         perilla.moveHorizontal(MARGIN_X - 38);
         perilla.moveVertical(MARGIN_Y);
 
-        makeVisible();
+        actualizar();
         
 
     }
@@ -96,7 +96,7 @@ public class SlotMachine
             wheels.add(pos - 1, wheel);
         }
         ok=true;
-        makeVisible();
+        actualizar();
     }
     
     /**
@@ -130,7 +130,7 @@ public class SlotMachine
             JOptionPane.showMessageDialog(null, "Accion no permitida: No hay paredes para eliminar");
             ok = false;
         }
-        makeVisible();
+        actualizar();
     }
     
     /**
@@ -174,7 +174,7 @@ public class SlotMachine
             }
             ok = true;
         }
-        makeVisible();
+        actualizar();
     }
     
     /**
@@ -190,7 +190,7 @@ public class SlotMachine
         if (!ok){
             JOptionPane.showMessageDialog(null, "Accion no permitida: No se puede eliminar el símbolo " + color + " porque no existe.");
         }
-        makeVisible();
+        actualizar();;
     }
     
      /**
@@ -210,10 +210,12 @@ public class SlotMachine
         if (wheel > wheels.size()){
             wheel = wheels.size();
         }
-        //.nextInt es un metodo de Random que genera un número entero aleatorio
-        // entre 0 (incluido) y symbols.size() (excluido). Este metodo fue consultado desde la API de JAVA
-        int randomIndex = random.nextInt(symbols.size());
-        wheels.get(wheel - 1).setVisibleIndex(randomIndex);
+        if (!wheels.get(wheel - 1).isLocked()){
+            //.nextInt es un metodo de Random que genera un número entero aleatorio
+            // entre 0 (incluido) y symbols.size() (excluido). Este metodo fue consultado desde la API de JAVA
+            int randomIndex = random.nextInt(symbols.size());
+            wheels.get(wheel - 1).setVisibleIndex(randomIndex);
+        }
     }
     
     /**
@@ -235,7 +237,7 @@ public class SlotMachine
             girada = true;
         }
         if (!isJackpot()){
-                makeVisible();
+                actualizar();
         }
     }
     
@@ -257,7 +259,7 @@ public class SlotMachine
             girada = true;
             ok = true;
             if (!isJackpot()){
-                makeVisible();
+                actualizar();
             }
         }
     }
@@ -277,7 +279,7 @@ public class SlotMachine
         if (wheels.isEmpty()){
             ok = false;
             JOptionPane.showMessageDialog(null, "Accion no permitida: No hay ruletas.");
-            makeVisible();
+            actualizar();
         }
         else {
             int index = symbols.indexOf(symbol);
@@ -296,7 +298,7 @@ public class SlotMachine
                 ok = true;
                 girada = true;
                 if (!isJackpot()){
-                    makeVisible();
+                    actualizar();
                 }
             }
         }
@@ -368,7 +370,7 @@ public class SlotMachine
             brazoHorizontal.changeColor("green");
             brazoVertical.changeColor("green");
             perilla.changeColor("yellow");
-            makeVisible();
+            actualizar();
             JOptionPane.showMessageDialog(null, "¡FELICIDADES HAS GANADO!");
             return true;
         }
@@ -387,7 +389,9 @@ public class SlotMachine
         return ok;
     }
     
-    
+    /**
+     * 
+     */
     private void actualizar(){
         if (wheels.isEmpty()){
             machine.changeSize(120, 120);
@@ -424,15 +428,126 @@ public class SlotMachine
         }
     }
 
+    /**
+     * 
+     */
     public void makeVisible(){
         visible = true;
         actualizar();
         
     }
     
+    /**
+     * 
+     */
     public void makeInvisible(){
         visible = false;
         actualizar();
     }
     
+    public void swap(int wheel1, int wheel2){
+        if (!wheels.isEmpty()){
+            boolean flag = false; 
+            String mensaje = "";
+            if (wheel1<1){
+                wheel1 = 1;
+                mensaje += "Se va a intercambiar la primera rueda ya que el valor dado es una rueda en una posicion menor que 1.\n";
+                flag = true;
+            }
+            if (wheel2<1){
+                wheel2 = 1;
+                mensaje += "Se va a intercambiar la primera rueda ya que el valor dado es una rueda en una posicion  menor que 1.\n";
+                flag = true;
+            }
+            if (wheel1 > wheels.size()){
+                wheel1 = wheels.size();
+                mensaje += "Se va a intercambiar la ultima rueda ya que el valor dado es una rueda en una posicion que es mayor que el tamaño.\n";
+                flag = true;
+            }
+            if (wheel2 > wheels.size()){
+                wheel2 = wheels.size();
+                mensaje += "Se va a intercambiar la ultima rueda ya que el valor dado es una rueda en una posicion que es mayor que el tamaño.\n";
+                flag = true;
+            }
+            ok = true;
+            if (!(wheel1 == wheel2)){
+                int idx1 = wheels.get(wheel1 - 1).getVisibleIndex();
+                int idx2 = wheels.get(wheel2 - 1).getVisibleIndex();                
+                wheels.get(wheel1 - 1).setVisibleIndex(idx2);
+                wheels.get(wheel2 - 1).setVisibleIndex(idx1);
+                if (flag){
+                    JOptionPane.showMessageDialog(null, mensaje);
+                } 
+                actualizar();
+            }
+            else {
+                ok = false;
+                JOptionPane.showMessageDialog(null, "Accion no permitida: Las ruedas son las mismas");
+            }
+        }
+         else{
+             JOptionPane.showMessageDialog(null, "Accion no permitida: No hay ruedas para cambiar.");
+            ok = false;    
+        }       
+    }
+    
+    public void lock(int wheel){
+        if (!wheels.isEmpty()){
+            boolean flag = false;
+            String  mensaje  = "";
+            if (wheel<1){
+                wheel = 1;
+                mensaje += "Se va a usar la primera rueda ya que el valor dado es una rueda en una posicion menor que 1.\n";
+                flag = true;
+            }
+            else if (wheel > wheels.size()){
+                wheel = wheels.size();
+                mensaje += "Se va a usar la primera rueda ya que el valor dado es una rueda en una posicion menor que 1.\n";
+                flag = true;
+            }
+            wheels.get(wheel-1).setLocked(true);
+            ok = true;
+            if (flag){
+                    JOptionPane.showMessageDialog(null, mensaje);
+                } 
+            actualizar();
+        }
+        else{
+            JOptionPane.showMessageDialog(null, "Accion no permitida: No hay ruedas para bloquear.");
+            ok = false;
+        }
+            
+    }
+    
+    public void unlock(int wheel){
+        if (!wheels.isEmpty()){
+            boolean flag = false;
+            String  mensaje  = "";
+            if (wheel<1){
+                wheel = 1;
+                mensaje += "Se va a usar la primera rueda ya que el valor dado es una rueda en una posicion menor que 1.\n";
+                flag = true;
+            }
+            else if (wheel > wheels.size()){
+                wheel = wheels.size();
+                mensaje += "Se va a usar la primera rueda ya que el valor dado es una rueda en una posicion menor que 1.\n";
+                flag = true;
+            }      
+            wheels.get(wheel - 1).setLocked(false);
+            ok = true;
+            if (flag){
+                    JOptionPane.showMessageDialog(null, mensaje);
+            } 
+            actualizar();
+        }
+        else {
+            JOptionPane.showMessageDialog(null, "Accion no permitida: No hay ruedas para desbloquear.");
+            ok = false;
+        }
+    }
 }
+
+
+
+
+
