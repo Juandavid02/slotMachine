@@ -180,6 +180,138 @@ public class SlotMachineC2Test
     
     
     
+        @Test
+    public void shouldNotPlaceSymbolWhenThereAreNoWheels()
+    {
+        machine.placeSymbol(1, "red");
+    
+        assertFalse(machine.ok());
+    }
+    
+    @Test
+    public void shouldNotPlaceSymbolWhenSymbolDoesNotExist()
+    {
+        machine.addWheel(1);
+    
+        machine.placeSymbol(1, "red");
+    
+        assertFalse(machine.ok());
+    }
+    
+    @Test
+    public void shouldPlaceSymbolAtGivenWheel()
+    {
+        machine.addSymbol(1, "red");
+        machine.addWheel(1);
+    
+        machine.placeSymbol(1, "red");
+    
+        assertTrue(machine.ok());
+        assertEquals("red", machine.configuration()[0]);
+    }
+    
+    @Test
+    public void shouldPlaceSymbolAtFirstWheelWhenPositionLessThanOne()
+    
+    {
+        machine.addSymbol(1, "red");
+        machine.addWheel(1);
+        machine.addWheel(2);
+    
+        machine.placeSymbol(0, "red");
+    
+        assertTrue(machine.ok());
+        assertEquals("red", machine.configuration()[0]);
+    }
+    
+    @Test
+    public void shouldPlaceSymbolAtLastWheelWhenPositionGreaterThanSize()
+    {
+        machine.addSymbol(1, "red");
+        machine.addWheel(1);
+        machine.addWheel(2);
+    
+        machine.placeSymbol(10, "red");
+    
+        assertTrue(machine.ok());
+        assertEquals("red", machine.configuration()[1]);
+    }
+    
+    
+        @Test
+    public void shouldReturnEmptySymbolsWhenNoneAdded()
+    {
+        String[] symbols = machine.symbols();
+    
+        assertEquals(0, symbols.length);
+    }
+    
+    @Test
+    public void shouldReturnAllAddedSymbolsInOrder()
+    {
+        machine.addSymbol(1, "red");
+        machine.addSymbol(2, "blue");
+    
+        String[] symbols = machine.symbols();
+    
+        assertEquals("red", symbols[0]);
+        assertEquals("blue", symbols[1]);
+    }
+    
+    
+        @Test
+    public void shouldReturnZeroDistinctSymbolsInitially()
+    {
+        assertEquals(0, machine.distinctSymbols());
+    }
+    
+    @Test
+    public void shouldReturnCorrectDistinctSymbolsCount()
+    {
+        machine.addSymbol(1, "red");
+        machine.addSymbol(2, "blue");
+    
+        assertEquals(2, machine.distinctSymbols());
+        
+    }
+    
+    
+        @Test
+    public void shouldNotBeJackpotWithLessThanTwoWheels()
+    {
+        machine.addSymbol(1, "red");
+        machine.addWheel(1);
+        machine.placeSymbol(1, "red");
+    
+        assertFalse(machine.isJackpot());
+    }
+    
+    @Test
+    public void shouldBeJackpotWhenAllWheelsShowSameSymbol()
+    {
+        machine.addSymbol(1, "red");
+        machine.addSymbol(2, "blue");
+        machine.addWheel(1);
+        machine.addWheel(2);
+        machine.placeSymbol(1, "red");
+        machine.placeSymbol(2, "red");
+
+        assertTrue(machine.isJackpot());
+    }
+    
+    @Test
+    public void shouldNotBeJackpotWhenWheelsShowDifferentSymbols()
+    {
+        machine.addSymbol(1, "red");
+        machine.addSymbol(2, "blue");
+        machine.addWheel(1);
+        machine.addWheel(2);
+        machine.placeSymbol(1, "red");
+        machine.placeSymbol(2, "blue");
+    
+        assertFalse(machine.isJackpot());
+    }
+        
     
     
     /**
