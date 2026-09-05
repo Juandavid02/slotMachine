@@ -736,8 +736,8 @@ public class SlotMachine
      * hubo jackpot una vez cerrada. Esta operación no se puede deshacer.
      */
     public void exit(){
-        cerrada = true;
         makeInvisible();
+        cerrada = true;
         ok = true;
     }
     
