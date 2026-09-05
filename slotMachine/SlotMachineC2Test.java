@@ -28,6 +28,7 @@ public class SlotMachineC2Test
     public void setUp()
     {
         machine = new SlotMachine();
+        
     }
     
     @Test
@@ -45,6 +46,114 @@ public class SlotMachineC2Test
 
         assertEquals(1, machine.configuration().length);
         assertTrue(machine.ok());
+    }
+    
+    @Test
+    public void shouldAddWheelAtBeginning()
+    {
+        machine.addWheel(0);
+    
+        assertEquals(1, machine.configuration().length);
+        assertTrue(machine.ok());
+    }
+    
+    @Test
+    public void shouldAddWheelAtPosition()
+    {
+        machine.addWheel(1);
+        machine.addWheel(2);
+    
+        machine.addWheel(2);
+    
+        assertEquals(3, machine.configuration().length);
+        assertTrue(machine.ok());
+    }
+    
+    @Test
+    public void shouldNotDeleteWheelWhenThereAreNone()
+    {
+        machine.delWheel(1);
+ 
+        assertFalse(machine.ok());
+        assertEquals(0, machine.configuration().length);
+    }
+ 
+    @Test
+    public void shouldDeleteFirstWheelWhenPositionLessThanOne()
+    {
+        machine.addWheel(1);
+        machine.addWheel(2);
+ 
+        machine.delWheel(0);
+ 
+        assertEquals(1, machine.configuration().length);
+        assertTrue(machine.ok());
+    }
+ 
+    @Test
+    public void shouldDeleteLastWheelWhenPositionGreaterThanSize()
+    {
+        machine.addWheel(1);
+        machine.addWheel(2);
+ 
+        machine.delWheel(10);
+ 
+        assertEquals(1, machine.configuration().length);
+        assertTrue(machine.ok());
+    }
+    
+    @Test
+    public void shouldAddSymbolAtEnd()
+    {
+        machine.addSymbol(10, "red");
+ 
+        assertEquals(1, machine.distinctSymbols());
+        assertTrue(machine.ok());
+    }
+ 
+    @Test
+    public void shouldAddSymbolAtBeginning()
+    {
+        machine.addSymbol(1, "red");
+        machine.addSymbol(1, "blue");
+ 
+        String[] symbols = machine.symbols();
+ 
+        assertEquals("blue", symbols[0]);
+        assertTrue(machine.ok());
+    }
+ 
+    @Test
+    public void shouldAddSymbolAtPosition()
+    {
+        machine.addSymbol(1, "red");
+        machine.addSymbol(2, "blue");
+ 
+        machine.addSymbol(2, "green");
+ 
+        String[] symbols = machine.symbols();
+        assertEquals("green", symbols[1]);
+        assertTrue(machine.ok());
+    }
+ 
+    @Test
+    public void shouldNotAddSymbolWithInvalidColor()
+    {
+        machine.addSymbol(1, "purple");
+ 
+        assertEquals(0, machine.distinctSymbols());
+        assertFalse(machine.ok());
+    }
+ 
+    @Test
+    public void shouldNotAddDuplicateSymbol()
+    {
+        machine.addSymbol(1, "red");
+ 
+        machine.addSymbol(2, "red");
+ 
+        assertEquals(1, machine.distinctSymbols());
+        assertFalse(machine.ok());
     }
     
     

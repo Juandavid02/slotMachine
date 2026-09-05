@@ -480,52 +480,6 @@ public class SlotMachine
         actualizar();
     }
     
-    public void swap(int wheel1, int wheel2){
-        if (!wheels.isEmpty()){
-            boolean flag = false; 
-            String mensaje = "";
-            if (wheel1<1){
-                wheel1 = 1;
-                mensaje += "Se va a intercambiar la primera rueda ya que el valor dado es una rueda en una posicion menor que 1.\n";
-                flag = true;
-            }
-            if (wheel2<1){
-                wheel2 = 1;
-                mensaje += "Se va a intercambiar la primera rueda ya que el valor dado es una rueda en una posicion  menor que 1.\n";
-                flag = true;
-            }
-            if (wheel1 > wheels.size()){
-                wheel1 = wheels.size();
-                mensaje += "Se va a intercambiar la ultima rueda ya que el valor dado es una rueda en una posicion que es mayor que el tamaño.\n";
-                flag = true;
-            }
-            if (wheel2 > wheels.size()){
-                wheel2 = wheels.size();
-                mensaje += "Se va a intercambiar la ultima rueda ya que el valor dado es una rueda en una posicion que es mayor que el tamaño.\n";
-                flag = true;
-            }
-            ok = true;
-            if (!(wheel1 == wheel2)){
-                int idx1 = wheels.get(wheel1 - 1).getVisibleIndex();
-                int idx2 = wheels.get(wheel2 - 1).getVisibleIndex();                
-                wheels.get(wheel1 - 1).setVisibleIndex(idx2);
-                wheels.get(wheel2 - 1).setVisibleIndex(idx1);
-                if (flag){
-                    JOptionPane.showMessageDialog(null, mensaje);
-                } 
-                actualizar();
-            }
-            else {
-                ok = false;
-                JOptionPane.showMessageDialog(null, "Accion no permitida: Las ruedas son las mismas");
-            }
-        }
-         else{
-             JOptionPane.showMessageDialog(null, "Accion no permitida: No hay ruedas para cambiar.");
-            ok = false;    
-        }       
-    }
-    
     public void lock(int wheel){
         if (!wheels.isEmpty()){
             boolean flag = false;
@@ -580,9 +534,50 @@ public class SlotMachine
             ok = false;
         }
     }
+    
+    public void swap(int wheel1, int wheel2){
+        if (!wheels.isEmpty()){
+            boolean flag = false; 
+            String mensaje = "";
+            if (wheel1<1){
+                wheel1 = 1;
+                mensaje += "Se va a intercambiar la primera rueda ya que el valor dado es una rueda en una posicion menor que 1.\n";
+                flag = true;
+            }
+            if (wheel2<1){
+                wheel2 = 1;
+                mensaje += "Se va a intercambiar la primera rueda ya que el valor dado es una rueda en una posicion  menor que 1.\n";
+                flag = true;
+            }
+            if (wheel1 > wheels.size()){
+                wheel1 = wheels.size();
+                mensaje += "Se va a intercambiar la ultima rueda ya que el valor dado es una rueda en una posicion que es mayor que el tamaño.\n";
+                flag = true;
+            }
+            if (wheel2 > wheels.size()){
+                wheel2 = wheels.size();
+                mensaje += "Se va a intercambiar la ultima rueda ya que el valor dado es una rueda en una posicion que es mayor que el tamaño.\n";
+                flag = true;
+            }
+            ok = true;
+            if (!(wheel1 == wheel2)){
+                int idx1 = wheels.get(wheel1 - 1).getVisibleIndex();
+                int idx2 = wheels.get(wheel2 - 1).getVisibleIndex();                
+                wheels.get(wheel1 - 1).setVisibleIndex(idx2);
+                wheels.get(wheel2 - 1).setVisibleIndex(idx1);
+                if (flag){
+                    JOptionPane.showMessageDialog(null, mensaje);
+                } 
+                actualizar();
+            }
+            else {
+                ok = false;
+                JOptionPane.showMessageDialog(null, "Accion no permitida: Las ruedas son las mismas");
+            }
+        }
+         else{
+             JOptionPane.showMessageDialog(null, "Accion no permitida: No hay ruedas para cambiar.");
+            ok = false;    
+        }       
+    }
 }
-
-
-
-
-
