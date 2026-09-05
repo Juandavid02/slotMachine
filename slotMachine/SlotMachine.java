@@ -620,6 +620,7 @@ public class SlotMachine
                     wheels.get(i).setVisibleIndex(index);
                 }
                 ok = true;
+                girada = true;
             }
         }
         if (!isJackpot()){
