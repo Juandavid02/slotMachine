@@ -317,8 +317,13 @@ public class SlotMachine
     {
         String [] config = new String[wheels.size()];
         for (int i = 0; i < wheels.size(); i++){
-            int idx = wheels.get(i).getVisibleIndex();
-            config[i] = symbols.get(idx);
+            if (!symbols.isEmpty()){
+                int idx = wheels.get(i).getVisibleIndex();
+                config[i] = symbols.get(idx);
+            }
+            else{
+                config[i] = null; 
+            }
         }
         return config;
     }
