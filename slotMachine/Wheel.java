@@ -65,10 +65,10 @@ public class Wheel
      * @param totalSymbols número total de símbolos disponibles en la máquina
      */
     public void rotate(int steps, int totalSymbols){
-    if (totalSymbols <= 0){
-        return;
-    }
-    visibleIndex = (visibleIndex + steps) % totalSymbols;
+        if (totalSymbols <= 0){
+            return;
+        }
+        visibleIndex = (visibleIndex + steps) % totalSymbols;
     }
     /**
      * Muestra la rueda en pantalla. Si el parámetro es verdadero,

@@ -313,6 +313,142 @@ public class SlotMachineC2Test
     }
         
     
+        @Test
+    public void shouldNotSwapWhenThereAreNoWheels()
+    {
+        machine.swap(1, 2);
+    
+        assertFalse(machine.ok());
+    }
+    
+    @Test
+    public void shouldSwapSymbolsBetweenTwoWheels()
+    {
+        machine.addSymbol(1, "red");
+        machine.addSymbol(2, "blue");
+        machine.addWheel(1);
+        machine.addWheel(2);
+        machine.placeSymbol(1, "red");
+        machine.placeSymbol(2, "blue");
+    
+        machine.swap(1, 2);
+    
+        assertTrue(machine.ok());
+        assertEquals("blue", machine.configuration()[0]);
+        assertEquals("red", machine.configuration()[1]);
+    }
+    
+    @Test
+    public void shouldNotSwapWhenBothWheelsAreTheSame()
+    {
+        machine.addSymbol(1, "red");
+        machine.addWheel(1);
+    
+        machine.swap(1, 1);
+    
+    
+        assertFalse(machine.ok());
+    }
+    
+    @Test
+    public void shouldAdjustFirstWheelWhenPositionLessThanOne()
+    {
+        machine.addSymbol(1, "red");
+        machine.addSymbol(2, "blue");
+        machine.addWheel(1);
+        machine.addWheel(2);
+        machine.placeSymbol(1, "red");
+        machine.placeSymbol(2, "blue");
+    
+        machine.swap(0, 2);
+    
+        assertTrue(machine.ok());
+        assertEquals("blue", machine.configuration()[0]);
+        assertEquals("red", machine.configuration()[1]);
+    }
+    
+    @Test
+    public void shouldAdjustLastWheelWhenPositionGreaterThanSize()
+    {
+        machine.addSymbol(1, "red");
+        machine.addSymbol(2, "blue");
+        machine.addWheel(1);
+        machine.addWheel(2);
+        machine.placeSymbol(1, "red");
+        machine.placeSymbol(2, "blue");
+    
+        machine.swap(1, 10);
+    
+    
+        assertTrue(machine.ok());
+        assertEquals("blue", machine.configuration()[0]);
+        assertEquals("red", machine.configuration()[1]);
+    }
+    
+    
+        @Test
+    public void shouldNotSetConfigurationWhenThereAreNoWheels()
+    {
+        machine.setConfiguration(new String[]{"red"});
+    
+        assertFalse(machine.ok());
+    }
+    
+    @Test
+    public void shouldNotSetConfigurationWhenSizeDoesNotMatchWheels()
+    {
+        machine.addSymbol(1, "red");
+        machine.addWheel(1);
+        machine.addWheel(2);
+    
+        machine.setConfiguration(new String[]{"red"});
+    
+        assertFalse(machine.ok());
+    }
+    
+    @Test
+    public void shouldNotSetConfigurationWithInvalidSymbol()
+    {
+        machine.addSymbol(1, "red");
+        machine.addWheel(1);
+        machine.addWheel(2);
+    
+        machine.setConfiguration(new String[]{"red", "purple"});
+    
+        assertFalse(machine.ok());
+    }
+    
+    @Test
+    public void shouldSetConfigurationSuccessfully()
+    {
+        machine.addSymbol(1, "red");
+        machine.addSymbol(2, "blue");
+        machine.addWheel(1);
+        machine.addWheel(2);
+    
+        machine.setConfiguration(new String[]{"red", "blue"});
+    
+        assertTrue(machine.ok());
+        assertEquals("red", machine.configuration()[0]);
+        assertEquals("blue", machine.configuration()[1]);
+    }
+    
+    @Test
+    public void shouldDetectJackpotWhenConfigurationIsForced()
+    {
+        machine.addSymbol(1, "red");
+        machine.addSymbol(2, "blue");
+        machine.addWheel(1);
+        machine.addWheel(2);
+    
+        machine.setConfiguration(new String[]{"red", "red"});
+    
+        assertTrue(machine.isJackpot());
+    }
+    
+    
+
+    
     
     /**
      * Tears down the test fixture.

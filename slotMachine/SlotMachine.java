@@ -273,26 +273,26 @@ public class SlotMachine
      * @param steps el número de pasos que debe avanzar la rueda
      */
     public void rotateWheel(int wheel, int steps){
-    if (symbols.isEmpty() || wheels.isEmpty()){
-        JOptionPane.showMessageDialog(null,
-            "Accion no permitida: No se puede rotar la rueda porque esta vacia la ruleta o no hay simbolos disponibles.");
-        ok = false;
-        return;
-    }
-    if (wheel <= 1){
-        wheel = 1;
-    }
-    if (wheel > wheels.size()){
-        wheel = wheels.size();
-    }
-    Wheel selected = wheels.get(wheel - 1);
-    for (int i = 0; i < steps; i++){
-        selected.rotate(1, symbols.size());
-        makeVisible();
-        Canvas.getCanvas().wait(100);
-    }
-    ok = true;
-    isJackpot();
+        if (symbols.isEmpty() || wheels.isEmpty()){
+            JOptionPane.showMessageDialog(null,
+                "Accion no permitida: No se puede rotar la rueda porque esta vacia la ruleta o no hay simbolos disponibles.");
+            ok = false;
+            return;
+        }
+        if (wheel <= 1){
+            wheel = 1;
+        }
+        if (wheel > wheels.size()){
+            wheel = wheels.size();
+        }
+        Wheel selected = wheels.get(wheel - 1);
+        for (int i = 0; i < steps; i++){
+            selected.rotate(1, symbols.size());
+            makeVisible();
+            Canvas.getCanvas().wait(100);
+        }
+        ok = true;
+        isJackpot();
     }
     /**
      * Coloca un símbolo específico en la rueda indicada.
