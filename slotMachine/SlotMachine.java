@@ -357,7 +357,51 @@ public class SlotMachine
         }
         return config;
     }
+    /**
+     * Establece la configuración completa de la máquina tragamonedas de una
+     * sola vez, asignando a cada rueda el símbolo correspondiente del arreglo
+     * recibido, en el mismo orden de las ruedas.
+     * La operación solo se realiza si el número de símbolos coincide con el
+     * número de ruedas, y si todos los símbolos indicados existen entre los
+     * símbolos disponibles.
+     *
+     * @param config un arreglo con el símbolo que se desea asignar a cada
+     * rueda, en el mismo orden que las ruedas
+     */
+    public void setConfiguration(String[] config)
+    {
+    if (wheels.isEmpty()){
+        JOptionPane.showMessageDialog(null, "Accion no permitida: No hay ruedas en la maquina.");
+        ok = false;
+    }
+    else if (config.length != wheels.size()){
+        JOptionPane.showMessageDialog(null, "Accion no permitida: La cantidad de simbolos no coincide con la cantidad de ruedas.");
+        ok = false;
+    }
+    else {
+        boolean allValid = true;
+        for (int i = 0; i < config.length; i++){
+            if (!symbols.contains(config[i])){
+                allValid = false;
+            }
+        }
+        if (!allValid){
+            JOptionPane.showMessageDialog(null, "Accion no permitida: Uno o mas simbolos indicados no existen.");
+            ok = false;
+        }
 
+        else {
+            for (int i = 0; i < config.length; i++){
+                int index = symbols.indexOf(config[i]);
+                wheels.get(i).setVisibleIndex(index);
+            }
+            ok = true;
+        }
+    }
+    if (!isJackpot()){
+        makeVisible();
+    }
+    }
     /**
      * Obtiene todos los símbolos disponibles en la máquina tragamonedas.
      *
