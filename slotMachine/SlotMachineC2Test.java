@@ -156,7 +156,7 @@ public class SlotMachineC2Test
         assertFalse(machine.ok());
     }
     
-       @Test
+    @Test
     public void shouldDeleteExistingSymbol()
     {
         machine.addSymbol(1, "red");
@@ -178,9 +178,103 @@ public class SlotMachineC2Test
         assertFalse(machine.ok());
     }
     
+    @Test
+    public void shouldVisble(){
+        machine.makeVisible();
+        assertTrue(machine.isVisible());
+        
+    }
+    
+    @Test
+    public void shouldInVisble(){
+        machine.makeInvisible();
+        assertFalse(machine.isVisible());
+        
+    }
+    
+     @Test
+    public void shouldNotLockWheelWhenThereAreNone()
+    {
+        machine.lock(1);
+ 
+        assertFalse(machine.ok());
+    }
+    
+    @Test
+    public void shouldLockFirstWheelWhenPositionLessThanOne()
+    {
+        machine.addWheel(1);
+        machine.addWheel(2);
+        machine.addSymbol(1, "red");
+        machine.addSymbol(2, "blue");
+        machine.placeSymbol(1, "red");
+ 
+        machine.lock(0);
+        machine.spin(1);
+ 
+        assertEquals("red", machine.configuration()[0]);
+        assertTrue(machine.ok());
+    }
     
     
-        @Test
+    @Test
+    public void shouldLockLastWheelWhenPositionGreaterThanSize()
+    {
+        machine.addWheel(1);
+        machine.addWheel(2);
+        machine.addSymbol(1, "red");
+        machine.addSymbol(2, "blue");
+        machine.placeSymbol(2, "blue");
+ 
+        machine.lock(10);
+        machine.spin(2);
+ 
+        assertEquals("blue", machine.configuration()[1]);
+        assertTrue(machine.ok());
+    }
+ 
+        
+    @Test
+    public void shouldNotUnlockWheelWhenThereAreNone()
+    {
+        machine.unlock(1);
+ 
+        assertFalse(machine.ok());
+    }
+    
+    
+    @Test
+    public void shouldUnlockFirstWheelWhenPositionLessThanOne()
+    {
+        machine.addWheel(1);
+        machine.addWheel(2);
+        machine.addSymbol(1, "red");
+        machine.addSymbol(2, "blue");
+        machine.placeSymbol(1, "red");
+        machine.lock(1);
+ 
+        machine.unlock(0);
+        machine.spin(1);
+ 
+        assertTrue(machine.ok());
+    }
+    
+    @Test
+    public void shouldUnlockLastWheelWhenPositionGreaterThanSize()
+    {
+        machine.addWheel(1);
+        machine.addWheel(2);
+        machine.addSymbol(1, "red");
+        machine.addSymbol(2, "blue");
+        machine.placeSymbol(2, "blue");
+        machine.lock(2);
+ 
+        machine.unlock(10);
+        machine.spin(2);
+ 
+        assertTrue(machine.ok());
+    }
+    @Test
     public void shouldNotPlaceSymbolWhenThereAreNoWheels()
     {
         machine.placeSymbol(1, "red");
@@ -238,7 +332,7 @@ public class SlotMachineC2Test
     }
     
     
-        @Test
+    @Test
     public void shouldReturnEmptySymbolsWhenNoneAdded()
     {
         String[] symbols = machine.symbols();
@@ -259,7 +353,7 @@ public class SlotMachineC2Test
     }
     
     
-        @Test
+    @Test
     public void shouldReturnZeroDistinctSymbolsInitially()
     {
         assertEquals(0, machine.distinctSymbols());
@@ -276,7 +370,7 @@ public class SlotMachineC2Test
     }
     
     
-        @Test
+    @Test
     public void shouldNotBeJackpotWithLessThanTwoWheels()
     {
         machine.addSymbol(1, "red");
@@ -311,6 +405,7 @@ public class SlotMachineC2Test
     
         assertFalse(machine.isJackpot());
     }
+
         
     
         @Test
