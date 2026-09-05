@@ -263,7 +263,37 @@ public class SlotMachine
             }
         }
     }
-    
+    /**
+     * Rota una rueda específica un número determinado de pasos, mostrando
+     * el avance paso a paso para simular el efecto físico de rotación.
+     * La posición de la rueda se ajusta a la primera o última rueda si la
+     * posición indicada está fuera del rango válido
+     *
+     * @param wheel la posición de la rueda que se desea rotar
+     * @param steps el número de pasos que debe avanzar la rueda
+     */
+    public void rotateWheel(int wheel, int steps){
+    if (symbols.isEmpty() || wheels.isEmpty()){
+        JOptionPane.showMessageDialog(null,
+            "Accion no permitida: No se puede rotar la rueda porque esta vacia la ruleta o no hay simbolos disponibles.");
+        ok = false;
+        return;
+    }
+    if (wheel <= 1){
+        wheel = 1;
+    }
+    if (wheel > wheels.size()){
+        wheel = wheels.size();
+    }
+    Wheel selected = wheels.get(wheel - 1);
+    for (int i = 0; i < steps; i++){
+        selected.rotate(1, symbols.size());
+        makeVisible();
+        Canvas.getCanvas().wait(100);
+    }
+    ok = true;
+    isJackpot();
+    }
     /**
      * Coloca un símbolo específico en la rueda indicada.
      * El símbolo debe existir entre los símbolos disponibles.
