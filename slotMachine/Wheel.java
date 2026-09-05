@@ -39,6 +39,7 @@ public class Wheel
         symbolFigure.moveHorizontal(20);
         symbolFigure.moveVertical(20);
     }
+    
     /**
      * Devuelve el índice del símbolo actualmente visible.
      *
@@ -48,6 +49,7 @@ public class Wheel
     {
         return visibleIndex;
     }
+    
      /**
      * Establece manualmente el índice del símbolo visible.
      *
@@ -57,19 +59,8 @@ public class Wheel
     {
         visibleIndex = index;
     }
+    
     /**
-     * Muestra la rueda en pantalla. Si el parámetro es verdadero,
-     * también muestra el símbolo dentro de la rueda.
-     *
-     * @param flag true para mostrar el símbolo, false para ocultarlo.
-     */
-    public void makeVisible(boolean flag){
-        wheelFigure.makeVisible();
-        if (flag){
-            symbolFigure.makeVisible();
-        }
-    }
-     /**
      * Cambia el color del símbolo circular dentro de la rueda.
      *
      * @param color nuevo color del símbolo (ej. "red", "blue", "green").
@@ -77,6 +68,7 @@ public class Wheel
     public void changeColor(String color){
         symbolFigure.changeColor(color);
     }
+    
     /**
      * Establece la posición de la rueda en coordenadas (x, y).
      * Mueve tanto el rectángulo como el círculo a la nueva ubicación.
@@ -97,25 +89,24 @@ public class Wheel
         currentX = x;
         currentY = y;
     }
-    /**
-     * Oculta la rueda y el símbolo de la pantalla.
-     */
-    public void makeInvisible(){
-        wheelFigure.makeInvisible();
-        symbolFigure.makeInvisible();
-    }
-    /**
-     * 
-     */
-    public boolean isLocked(){
-        return locked;
-    }
     
     /**
-     * 
+     * Permite modificar el estado de las ruedas para que esten 
+     * bloquadas o desbloqueadas
+     *
+     * @param value true para bloquear la rueda, false para permitir que gire.
      */
     public void setLocked(boolean value){
         locked=value;
+    }
+    
+    /**
+     * Indica si la rueda se encuentra actualmente bloqueada.
+     *
+     * @return true si la rueda está bloqueada, false en caso contrario.
+     */
+    public boolean isLocked(){
+        return locked;
     }
     
     /**
@@ -130,5 +121,26 @@ public class Wheel
             return;
         }
         visibleIndex = (visibleIndex + steps) % totalSymbols;
+    }
+    
+    /**
+     * Muestra la rueda en pantalla. Si el parámetro es verdadero,
+     * también muestra el símbolo dentro de la rueda.
+     *
+     * @param flag true para mostrar el símbolo, false para ocultarlo.
+     */
+    public void makeVisible(boolean flag){
+        wheelFigure.makeVisible();
+        if (flag){
+            symbolFigure.makeVisible();
+        }
+    }
+    
+    /**
+     * Oculta la rueda y el símbolo de la pantalla.
+     */
+    public void makeInvisible(){
+        wheelFigure.makeInvisible();
+        symbolFigure.makeInvisible();
     }
 }

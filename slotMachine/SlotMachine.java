@@ -17,13 +17,13 @@ public class SlotMachine
     private List<String> symbols;
     private boolean visible;
     private boolean ok;
+    private boolean cerrada;
+    private boolean girada;
     private Random random;
     private Rectangle machine;
     private Rectangle brazoHorizontal;
     private Rectangle brazoVertical;
     private Circle perilla;
-    private boolean cerrada;
-    private boolean girada;
     // Variables constantes para dejar espacio tanto arriba como a la derecha
     private static final int MARGIN_X = 60;
     private static final int MARGIN_Y = 30;
