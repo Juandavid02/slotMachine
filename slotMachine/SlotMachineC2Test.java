@@ -532,6 +532,15 @@ public class SlotMachineC2Test
     }
     
     
+    
+    
+    
+    
+    /**
+     * Verifica que placeSymbol(int, String) rechace la operación cuando
+     * la máquina no tiene ninguna rueda registrada, sin importar el
+     * símbolo indicado.
+     */
     @Test
     public void shouldNotPlaceSymbolWhenThereAreNoWheels()
     {
@@ -540,6 +549,11 @@ public class SlotMachineC2Test
         assertFalse(machine.ok());
     }
     
+    /**
+     * Verifica que placeSymbol(int, String) rechace la operación cuando
+     * el símbolo indicado no existe entre los símbolos disponibles en
+     * la máquina, aunque sí exista al menos una rueda.
+     */
     @Test
     public void shouldNotPlaceSymbolWhenSymbolDoesNotExist()
     {
@@ -550,6 +564,11 @@ public class SlotMachineC2Test
         assertFalse(machine.ok());
     }
     
+    /**
+     * Verifica que placeSymbol(int, String) asigne correctamente el
+     * símbolo indicado a la rueda especificada, cuando tanto el símbolo
+     * como la posición de la rueda son válidos.
+     */
     @Test
     public void shouldPlaceSymbolAtGivenWheel()
     {
@@ -562,9 +581,13 @@ public class SlotMachineC2Test
         assertEquals("red", machine.configuration()[0]);
     }
     
+    /**
+     * Verifica que placeSymbol(int, String) ajuste automáticamente a la
+     * primera rueda cuando la posición indicada es menor a uno, y
+     * asigne el símbolo correctamente a esa rueda.
+     */
     @Test
     public void shouldPlaceSymbolAtFirstWheelWhenPositionLessThanOne()
-    
     {
         machine.addSymbol(1, "red");
         machine.addWheel(1);
@@ -576,6 +599,11 @@ public class SlotMachineC2Test
         assertEquals("red", machine.configuration()[0]);
     }
     
+    /**
+     * Verifica que placeSymbol(int, String) ajuste automáticamente a la
+     * última rueda cuando la posición indicada excede el número de
+     * ruedas existentes, y asigne el símbolo correctamente a esa rueda.
+     */
     @Test
     public void shouldPlaceSymbolAtLastWheelWhenPositionGreaterThanSize()
     {
@@ -589,6 +617,16 @@ public class SlotMachineC2Test
         assertEquals("red", machine.configuration()[1]);
     }
     
+
+  
+    
+    
+    
+    
+    /**
+     * Verifica que symbols() retorne un arreglo vacío cuando la máquina
+     * recién creada aún no tiene ningún símbolo agregado.
+     */
     @Test
     public void shouldReturnEmptySymbolsWhenNoneAdded()
     {
@@ -597,6 +635,10 @@ public class SlotMachineC2Test
         assertEquals(0, symbols.length);
     }
     
+    /**
+     * Verifica que symbols() retorne todos los símbolos agregados a la
+     * máquina, respetando el mismo orden en que fueron insertados.
+     */
     @Test
     public void shouldReturnAllAddedSymbolsInOrder()
     {
@@ -610,12 +652,25 @@ public class SlotMachineC2Test
     }
     
     
+    
+    
+    
+    
+    /**
+     * Verifica que distinctSymbols() retorne cero cuando la máquina
+     * recién creada aún no tiene ningún símbolo agregado.
+     */
     @Test
     public void shouldReturnZeroDistinctSymbolsInitially()
     {
         assertEquals(0, machine.distinctSymbols());
     }
     
+    /**
+     * Verifica que distinctSymbols() retorne la cantidad correcta de
+     * símbolos diferentes después de agregar dos símbolos distintos
+     * a la máquina.
+     */
     @Test
     public void shouldReturnCorrectDistinctSymbolsCount()
     {
@@ -623,10 +678,19 @@ public class SlotMachineC2Test
         machine.addSymbol(2, "blue");
     
         assertEquals(2, machine.distinctSymbols());
-        
     }
     
     
+    
+    
+    
+    
+    /**
+     * Verifica que isJackpot() retorne false cuando la máquina tiene
+     * menos de dos ruedas, sin importar el símbolo que muestre la
+     * única rueda existente, ya que se requieren al menos dos ruedas
+     * para que un jackpot sea posible.
+     */
     @Test
     public void shouldNotBeJackpotWithLessThanTwoWheels()
     {
@@ -637,6 +701,10 @@ public class SlotMachineC2Test
         assertFalse(machine.isJackpot());
     }
     
+    /**
+     * Verifica que isJackpot() retorne true cuando hay al menos dos
+     * ruedas y todas muestran exactamente el mismo símbolo.
+     */
     @Test
     public void shouldBeJackpotWhenAllWheelsShowSameSymbol()
     {
@@ -646,10 +714,15 @@ public class SlotMachineC2Test
         machine.addWheel(2);
         machine.placeSymbol(1, "red");
         machine.placeSymbol(2, "red");
-
         assertTrue(machine.isJackpot());
     }
     
+    
+    /**
+     * Verifica que isJackpot() retorne false cuando las ruedas muestran
+     * símbolos distintos entre sí, aunque haya al menos dos ruedas y
+     * más de un símbolo disponible en la máquina.
+     */
     @Test
     public void shouldNotBeJackpotWhenWheelsShowDifferentSymbols()
     {
@@ -665,7 +738,15 @@ public class SlotMachineC2Test
 
         
     
-        @Test
+    
+    
+    
+    
+    /**
+     * Verifica que swap(int, int) rechace la operación cuando la máquina
+     * no tiene ninguna rueda registrada.
+     */
+    @Test
     public void shouldNotSwapWhenThereAreNoWheels()
     {
         machine.swap(1, 2);
@@ -673,6 +754,11 @@ public class SlotMachineC2Test
         assertFalse(machine.ok());
     }
     
+    /**
+     * Verifica que swap(int, int) intercambie correctamente los símbolos
+     * visibles entre dos ruedas distintas y válidas, dejando cada rueda
+     * con el símbolo que antes tenía la otra.
+     */
     @Test
     public void shouldSwapSymbolsBetweenTwoWheels()
     {
@@ -690,6 +776,11 @@ public class SlotMachineC2Test
         assertEquals("red", machine.configuration()[1]);
     }
     
+    /**
+     * Verifica que swap(int, int) rechace la operación cuando ambos
+     * parámetros indicados corresponden a la misma rueda, ya que no
+     * tiene sentido intercambiar una rueda consigo misma.
+     */
     @Test
     public void shouldNotSwapWhenBothWheelsAreTheSame()
     {
@@ -698,10 +789,14 @@ public class SlotMachineC2Test
     
         machine.swap(1, 1);
     
-    
         assertFalse(machine.ok());
     }
     
+    /**
+     * Verifica que swap(int, int) ajuste automáticamente a la primera
+     * rueda cuando la posición indicada es menor a uno, e intercambie
+     * su símbolo correctamente con la otra rueda especificada.
+     */
     @Test
     public void shouldAdjustFirstWheelWhenPositionLessThanOne()
     {
@@ -719,6 +814,12 @@ public class SlotMachineC2Test
         assertEquals("red", machine.configuration()[1]);
     }
     
+    /**
+     * Verifica que swap(int, int) ajuste automáticamente a la última
+     * rueda cuando la posición indicada excede el número de ruedas
+     * existentes, e intercambie su símbolo correctamente con la otra
+     * rueda especificada.
+     */
     @Test
     public void shouldAdjustLastWheelWhenPositionGreaterThanSize()
     {
@@ -731,60 +832,113 @@ public class SlotMachineC2Test
     
         machine.swap(1, 10);
     
-    
         assertTrue(machine.ok());
         assertEquals("blue", machine.configuration()[0]);
         assertEquals("red", machine.configuration()[1]);
     }
     
-    
-        @Test
-    public void shouldNotSetConfigurationWhenThereAreNoWheels()
+    /**
+     * Verifica que swap(int, int) rechace por completo la operación
+     * cuando al menos una de las dos ruedas involucradas está bloqueada,
+     * y que ninguna de las dos ruedas cambie su símbolo original como
+     * resultado del intento.
+     */
+    @Test
+    public void shouldNotSwapWhenOneWheelIsLocked()
     {
-        machine.setConfiguration(new String[]{"red"});
+        machine.addSymbol(1, "red");
+        machine.addSymbol(2, "blue");
+        machine.addWheel(1);
+        machine.addWheel(2);
+        machine.placeSymbol(1, "red");
+        machine.placeSymbol(2, "blue");
+        machine.lock(1);
+    
+        machine.swap(1, 2);
+    
+        assertFalse(machine.ok());
+        assertEquals("red", machine.configuration()[0]);
+        assertEquals("blue", machine.configuration()[1]);
+    }
+    
+    
+    
+
+    
+    
+        /**
+     * Verifica que spin(String[]) rechace la operación cuando la máquina
+     * no tiene ninguna rueda registrada, sin importar el contenido del
+     * arreglo de símbolos recibido.
+     */
+    @Test
+    public void shouldNotSpinConfigurationWhenThereAreNoWheels()
+    {
+        machine.spin(new String[]{"red"});
     
         assertFalse(machine.ok());
     }
     
+    /**
+     * Verifica que spin(String[]) rechace la operación cuando la cantidad
+     * de símbolos del arreglo recibido no coincide con la cantidad de
+     * ruedas existentes en la máquina.
+     */
     @Test
-    public void shouldNotSetConfigurationWhenSizeDoesNotMatchWheels()
+    public void shouldNotSpinConfigurationWhenSizeDoesNotMatchWheels()
     {
         machine.addSymbol(1, "red");
         machine.addWheel(1);
         machine.addWheel(2);
     
-        machine.setConfiguration(new String[]{"red"});
+        machine.spin(new String[]{"red"});
     
         assertFalse(machine.ok());
     }
     
+    /**
+     * Verifica que spin(String[]) rechace la operación cuando alguno de
+     * los símbolos indicados en el arreglo no existe entre los símbolos
+     * disponibles en la máquina.
+     */
     @Test
-    public void shouldNotSetConfigurationWithInvalidSymbol()
+    public void shouldNotSpinConfigurationWithInvalidSymbol()
     {
         machine.addSymbol(1, "red");
         machine.addWheel(1);
         machine.addWheel(2);
     
-        machine.setConfiguration(new String[]{"red", "purple"});
+        machine.spin(new String[]{"red", "purple"});
     
         assertFalse(machine.ok());
     }
     
+    /**
+     * Verifica que spin(String[]) asigne correctamente cada símbolo del
+     * arreglo a su rueda correspondiente, en el mismo orden, cuando la
+     * cantidad de símbolos coincide con la cantidad de ruedas y todos
+     * los símbolos son válidos.
+     */
     @Test
-    public void shouldSetConfigurationSuccessfully()
+    public void shouldSpinConfigurationSuccessfully()
     {
         machine.addSymbol(1, "red");
         machine.addSymbol(2, "blue");
         machine.addWheel(1);
         machine.addWheel(2);
     
-        machine.setConfiguration(new String[]{"red", "blue"});
+        machine.spin(new String[]{"red", "blue"});
     
         assertTrue(machine.ok());
         assertEquals("red", machine.configuration()[0]);
         assertEquals("blue", machine.configuration()[1]);
     }
     
+    /**
+     * Verifica que, al forzar una configuración donde todas las ruedas
+     * quedan con el mismo símbolo mediante spin(String[]), isJackpot()
+     * detecte correctamente el jackpot resultante.
+     */
     @Test
     public void shouldDetectJackpotWhenConfigurationIsForced()
     {
@@ -793,12 +947,35 @@ public class SlotMachineC2Test
         machine.addWheel(1);
         machine.addWheel(2);
     
-        machine.setConfiguration(new String[]{"red", "red"});
+        machine.spin(new String[]{"red", "red"});
     
         assertTrue(machine.isJackpot());
     }
     
+    /**
+     * Verifica que spin(String[]) omita la asignación de símbolo en una
+     * rueda bloqueada, dejando su símbolo original intacto, mientras que
+     * las ruedas no bloqueadas sí reciben el símbolo indicado en el
+     * arreglo. La operación se considera exitosa (ok = true) aunque una
+     * rueda haya sido omitida por estar bloqueada.
+     */
+    @Test
+    public void shouldSkipLockedWheelWhenSpinningConfiguration()
+    {
+        machine.addSymbol(1, "red");
+        machine.addSymbol(2, "blue");
+        machine.addWheel(1);
+        machine.addWheel(2);
+        machine.placeSymbol(1, "red");
+        machine.placeSymbol(2, "blue");
+        machine.lock(2);
     
+        machine.spin(new String[]{"red", "red"});
+    
+        assertTrue(machine.ok());
+        assertEquals("red", machine.configuration()[0]);
+        assertEquals("blue", machine.configuration()[1]);
+    }
 
     
     
