@@ -451,6 +451,10 @@ public class SlotMachine
         actualizar();
     }
     
+    public boolean isVisible(){
+        return visible;
+    }
+    
     public void lock(int wheel){
         if (!wheels.isEmpty()){
             boolean flag = false;
@@ -462,7 +466,7 @@ public class SlotMachine
             }
             else if (wheel > wheels.size()){
                 wheel = wheels.size();
-                mensaje += "Se va a usar la primera rueda ya que el valor dado es una rueda en una posicion menor que 1.\n";
+                mensaje += "Se va a usar la ultima rueda ya que el valor dado es una rueda que esta a fuera del tamaño.\n";
                 flag = true;
             }
             wheels.get(wheel-1).setLocked(true);
@@ -490,7 +494,7 @@ public class SlotMachine
             }
             else if (wheel > wheels.size()){
                 wheel = wheels.size();
-                mensaje += "Se va a usar la primera rueda ya que el valor dado es una rueda en una posicion menor que 1.\n";
+                mensaje += "Se va a usar la ultima rueda ya que el valor dado es una rueda que esta a fuera del tamaño.\n";
                 flag = true;
             }      
             wheels.get(wheel - 1).setLocked(false);
@@ -561,27 +565,27 @@ public class SlotMachine
      * @param wheel la posición de la rueda que se desea rotar
      * @param steps el número de pasos que debe avanzar la rueda
      */
-    public void rotateWheel(int wheel, int steps){
-    if (symbols.isEmpty() || wheels.isEmpty()){
-        JOptionPane.showMessageDialog(null,
-            "Accion no permitida: No se puede rotar la rueda porque esta vacia la ruleta o no hay simbolos disponibles.");
-        ok = false;
-        return;
-    }
-    if (wheel <= 1){
-        wheel = 1;
-    }
-    if (wheel > wheels.size()){
-        wheel = wheels.size();
-    }
-    Wheel selected = wheels.get(wheel - 1);
-    for (int i = 0; i < steps; i++){
-        selected.rotate(1, symbols.size());
-        makeVisible();
-        Canvas.getCanvas().wait(100);
-    }
-    ok = true;
-    isJackpot();
+    public void spin(int wheel, int steps){
+        if (symbols.isEmpty() || wheels.isEmpty()){
+            JOptionPane.showMessageDialog(null,
+                "Accion no permitida: No se puede rotar la rueda porque esta vacia la ruleta o no hay simbolos disponibles.");
+            ok = false;
+            return;
+        }
+        if (wheel <= 1){
+            wheel = 1;
+        }
+        if (wheel > wheels.size()){
+            wheel = wheels.size();
+        }
+        Wheel selected = wheels.get(wheel - 1);
+        for (int i = 0; i < steps; i++){
+            selected.rotate(1, symbols.size());
+            actualizar();
+            Canvas.getCanvas().wait(100);
+        }
+        ok = true;
+        isJackpot();
     }
     
     /**
@@ -625,7 +629,7 @@ public class SlotMachine
             }
         }
         if (!isJackpot()){
-            makeVisible();
+            actualizar();
         }
     }
 }
