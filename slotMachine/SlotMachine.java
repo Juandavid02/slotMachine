@@ -193,16 +193,18 @@ public class SlotMachine
         actualizar();;
     }
     
-     /**
+    /**
      * Gira una rueda específica y la establece en un símbolo seleccionado
-     * aleatoriamente. La posición de la rueda se ajusta a la primera o
-     * última rueda si la posición indicada está fuera del rango válido.
+     * aleatoriamente, siempre que dicha rueda no esté bloqueada. La posición
+     * de la rueda se ajusta a la primera o última rueda si la posición
+     * indicada está fuera del rango válido. Si la rueda se encuentra
+     * bloqueada (locked), no se modifica su símbolo visible.
      *
      * @param wheel la posición de la rueda que se desea girar
      */
-     // Este método es privado porque es una operación interna utilizada
-     // por la máquina tragamonedas al realizar un giro y no debe ser
-     // llamada directamente desde fuera de la clase.
+    // Este método es privado porque es una operación interna utilizada
+    // por la máquina tragamonedas al realizar un giro y no debe ser
+    // llamada directamente desde fuera de la clase.
     private void turnWheel(int wheel){
         if (wheel <= 1){
             wheel = 1;
@@ -395,7 +397,14 @@ public class SlotMachine
     }
     
     /**
+     * Actualiza el estado gráfico completo de la máquina tragamonedas.
      * 
+     * Redimensiona el cuerpo de la máquina según la cantidad de ruedas
+     * o al tamaño por defecto si no hay ninguna, reposiciona cada rueda
+     * de forma igual y actualiza su color según el símbolo que
+     * tiene actualmente visible. Finalmente, sincroniza la visibilidad de
+     * todos los componentes gráficos (cuerpo, brazos, perilla y ruedas)
+     * dependiendo de visble si esta en true o false.
      */
     private void actualizar(){
         if (wheels.isEmpty()){
@@ -434,7 +443,9 @@ public class SlotMachine
     }
 
     /**
-     * 
+     * Hace visible la máquina tragamonedas junto con todos sus componentes
+     * gráficos (cuerpo, brazos, perilla y ruedas). 
+     * Ademas cambia el valor de visble a true
      */
     public void makeVisible(){
         visible = true;
@@ -443,17 +454,33 @@ public class SlotMachine
     }
     
     /**
-     * 
+     * Hace invisible la máquina tragamonedas junto con todos sus componentes
+     * gráficos (cuerpo, brazos, perilla y ruedas).
+     * Ademas cambia el valor de visble a false
      */
     public void makeInvisible(){
         visible = false;
         actualizar();
     }
     
+    /**
+     * Comprueba si la máquina tragamonedas se encuentra actualmente visible o no.
+     *
+     * @return true si la máquina es visible o false en caso contrario
+     */
     public boolean isVisible(){
         return visible;
     }
     
+    /**
+     * Bloquea la rueda indicada para que no sea modificada por los métodos
+     * de giro (spin). Si la posición indicada es menor que uno, se bloquea
+     * la primera rueda; si es mayor que el número de ruedas, se bloquea la
+     * última, mostrando en ambos casos un mensaje informativo. La operación
+     * solo se realiza si la máquina tiene al menos una rueda.
+     *
+     * @param wheel la posición de la rueda que se desea bloquear
+     */ 
     public void lock(int wheel){
         if (!wheels.isEmpty()){
             boolean flag = false;
@@ -482,6 +509,16 @@ public class SlotMachine
             
     }
     
+    /**
+     * Desbloquea la rueda indicada, permitiendo que vuelva a ser modificada
+     * por los métodos de giro (spin). Si la posición indicada es menor que
+     * uno, se desbloquea la primera rueda; si es mayor que el número de
+     * ruedas, se desbloquea la última, mostrando en ambos casos un mensaje
+     * informativo. La operación solo se realiza si la máquina tiene al
+     * menos una rueda.
+     *
+     * @param wheel la posición de la rueda que se desea desbloquear
+     */
     public void unlock(int wheel){
         if (!wheels.isEmpty()){
             boolean flag = false;

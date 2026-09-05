@@ -4,33 +4,44 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * The test class SlotMachineC2Test.
+ * Clase de pruebas unitarias para SlotMachine.
+ * Verifica el comportamiento del ciclo 1 y 2: agregar/eliminar ruedas y
+ * símbolos, ubicar y girar símbolos, bloqueo/desbloqueo de ruedas, y
+ * detección de jackpot, incluyendo los casos límites en las posiciones
+ * fuera de rango para revisar como esta validandoesos datos el sistema.
  *
- * @author  (your name)
- * @version (a version number or a date)
+ * @author Juan David Rojas y César Morales
+ * @version 1.0 (05-09-2026)
  */
 public class SlotMachineC2Test
 {
     private SlotMachine machine;
     /**
-     * Default constructor for test class SlotMachineC2Test
+     * Constructor por defecto de la clase de pruebas SlotMachineC2Test.
+     * No realiza ninguna inicialización.
      */
     public SlotMachineC2Test()
     {
     }
 
     /**
-     * Sets up the test fixture.
-     *
-     * Called before every test case method.
+     * Prepara el escenario de cada prueba.
+     * Se ejecuta antes de cada método de prueba, creando una nueva instancia
+     * de SlotMachine para garantizar que cada prueba comience con un
+     * estado limpio e independiente.
      */
     @BeforeEach
     public void setUp()
     {
-        machine = new SlotMachine();
-        
+        machine = new SlotMachine();   
     }
     
+    
+    //Pruebas del metodo configuration()
+    /**
+     * Verifica que {@code configuration()} retorne un arreglo vacío cuando
+     * la máquina tragamonedas no tiene ninguna rueda.
+     */
     @Test
     public void shouldReturnEmptyConfigurationWhenThereAreNoWheels()
     {
@@ -39,15 +50,25 @@ public class SlotMachineC2Test
         assertEquals(0, config.length);
     }
     
+    
+    //Pruebas del metodo addWheel(int pos)
+    /**
+     * Verifica que {@code addWheel(int pos)} agregue la rueda al final
+     * cuando la posición indicada es mayor que el número actual de ruedas.
+     */
     @Test 
     public void shouldAddWheelAtEnd()
     {
         machine.addWheel(10);
-
+        
         assertEquals(1, machine.configuration().length);
         assertTrue(machine.ok());
     }
     
+    /**
+     * Verifica que {@code addWheel(int pos)} agregue la rueda al principio
+     * cuando la posición indicada es menor que uno.
+     */    
     @Test
     public void shouldAddWheelAtBeginning()
     {
@@ -57,18 +78,29 @@ public class SlotMachineC2Test
         assertTrue(machine.ok());
     }
     
+    /**
+     * Verifica que {@code addWheel(int pos)} agregue la rueda en la posición
+     * intermedia indicada, desplazando las ruedas existentes.
+     */    
     @Test
     public void shouldAddWheelAtPosition()
     {
         machine.addWheel(1);
         machine.addWheel(2);
-    
         machine.addWheel(2);
     
         assertEquals(3, machine.configuration().length);
         assertTrue(machine.ok());
     }
     
+    
+    //Pruebas del metodo delWheel(int pos)
+    
+    /**
+     * Verifica que {@code delWheel(int pos)} no realice ninguna eliminación
+     * y marque la operación como no exitosa cuando la máquina no tiene
+     * ninguna rueda.
+     */
     @Test
     public void shouldNotDeleteWheelWhenThereAreNone()
     {
@@ -78,30 +110,44 @@ public class SlotMachineC2Test
         assertEquals(0, machine.configuration().length);
     }
  
+    /**
+     * Verifica que {@code delWheel(int pos)} elimine la primera rueda
+     * cuando la posición indicada es menor que uno.
+     */    
     @Test
     public void shouldDeleteFirstWheelWhenPositionLessThanOne()
     {
         machine.addWheel(1);
-        machine.addWheel(2);
- 
+        machine.addWheel(2); 
         machine.delWheel(0);
  
         assertEquals(1, machine.configuration().length);
         assertTrue(machine.ok());
     }
  
+    /**
+     * Verifica que {@code delWheel(int pos)} elimine la última rueda
+     * cuando la posición indicada es mayor que el número de ruedas.
+     */
     @Test
     public void shouldDeleteLastWheelWhenPositionGreaterThanSize()
     {
         machine.addWheel(1);
-        machine.addWheel(2);
- 
+        machine.addWheel(2); 
         machine.delWheel(10);
  
         assertEquals(1, machine.configuration().length);
         assertTrue(machine.ok());
     }
     
+    
+    // Pruebas del metodo addSymbol(int pos, String color)}
+    
+    /**
+     * Verifica que {@code addSymbol(int pos, String color)} agregue el
+     * símbolo al final cuando la posición indicada es mayor que el número
+     * actual de símbolos.
+     */    
     @Test
     public void shouldAddSymbolAtEnd()
     {
@@ -110,7 +156,12 @@ public class SlotMachineC2Test
         assertEquals(1, machine.distinctSymbols());
         assertTrue(machine.ok());
     }
- 
+
+    /**
+     * Verifica que {@code addSymbol(int pos, String color)} agregue el
+     * símbolo al principio cuando la posición indicada es menor o igual
+     * a uno.
+     */
     @Test
     public void shouldAddSymbolAtBeginning()
     {
@@ -118,24 +169,32 @@ public class SlotMachineC2Test
         machine.addSymbol(1, "blue");
  
         String[] symbols = machine.symbols();
- 
         assertEquals("blue", symbols[0]);
         assertTrue(machine.ok());
     }
- 
+
+    /**
+     * Verifica que {@code addSymbol(int pos, String color)} agregue el
+     * símbolo en la posición intermedia indicada, desplazando los
+     * símbolos existentes.
+     */
     @Test
     public void shouldAddSymbolAtPosition()
     {
         machine.addSymbol(1, "red");
         machine.addSymbol(2, "blue");
- 
         machine.addSymbol(2, "green");
  
         String[] symbols = machine.symbols();
         assertEquals("green", symbols[1]);
         assertTrue(machine.ok());
     }
- 
+    
+    /**
+     * Verifica que {@code addSymbol(int pos, String color)} no agregue el
+     * símbolo y marque la operación como no exitosa cuando el color
+     * indicado no está entre los colores disponibles.
+     */    
     @Test
     public void shouldNotAddSymbolWithInvalidColor()
     {
@@ -144,47 +203,72 @@ public class SlotMachineC2Test
         assertEquals(0, machine.distinctSymbols());
         assertFalse(machine.ok());
     }
- 
+     
+    /**
+     * Verifica que {@code addSymbol(int pos, String color)} no agregue un
+     * símbolo duplicado y marque la operación como no exitosa cuando el
+     * color ya existe entre los símbolos disponibles.
+     */
     @Test
     public void shouldNotAddDuplicateSymbol()
     {
         machine.addSymbol(1, "red");
- 
         machine.addSymbol(2, "red");
  
         assertEquals(1, machine.distinctSymbols());
         assertFalse(machine.ok());
     }
     
+    
+    // Pruebas del metodo delSymbol(String color)
+    
+    /**
+    * Verifica que {@code delSymbol(String color)} elimine correctamente
+    * un símbolo que sí existe entre los símbolos disponibles.
+    */
     @Test
     public void shouldDeleteExistingSymbol()
     {
-        machine.addSymbol(1, "red");
- 
+        machine.addSymbol(1, "red"); 
         machine.delSymbol("red");
  
         assertEquals(0, machine.distinctSymbols());
         assertTrue(machine.ok());
     }
- 
+    
+    /**
+     * Verifica que {@code delSymbol(String color)} no realice ninguna
+     * eliminación y marque la operación como no exitosa cuando el símbolo
+     * indicado no existe entre los símbolos disponibles.
+     */ 
     @Test
     public void shouldNotDeleteNonExistingSymbol()
     {
         machine.addSymbol(1, "red");
- 
         machine.delSymbol("blue");
  
         assertEquals(1, machine.distinctSymbols());
         assertFalse(machine.ok());
     }
     
+    
+    // Pruebas de visibilidad
+    
+    /**
+     * Verifica que {@code makeVisible()} deje la máquina tragamonedas en
+     * estado visible.
+     */
     @Test
     public void shouldVisble(){
         machine.makeVisible();
         assertTrue(machine.isVisible());
         
     }
-    
+        
+    /**
+     * Verifica que {@code makeInvisible()} deje la máquina tragamonedas en
+     * estado no visible.
+     */    
     @Test
     public void shouldInVisble(){
         machine.makeInvisible();
@@ -192,7 +276,15 @@ public class SlotMachineC2Test
         
     }
     
-     @Test
+    
+    //Pruebas del metodo lock(int wheel)
+    
+    /**
+     * Verifica que {@code lock(int wheel)} no realice ninguna acción y
+     * marque la operación como no exitosa cuando la máquina no tiene
+     * ninguna rueda.
+     */    
+    @Test
     public void shouldNotLockWheelWhenThereAreNone()
     {
         machine.lock(1);
@@ -200,6 +292,11 @@ public class SlotMachineC2Test
         assertFalse(machine.ok());
     }
     
+    /**
+    * Verifica que {@code lock(int wheel)} bloquee la primera rueda cuando
+    * la posición indicada es menor que uno, y que dicha rueda permanezca
+    * con su símbolo original tras intentar girarla.
+    */
     @Test
     public void shouldLockFirstWheelWhenPositionLessThanOne()
     {
@@ -216,7 +313,11 @@ public class SlotMachineC2Test
         assertTrue(machine.ok());
     }
     
-    
+    /**
+     * Verifica que {@code lock(int wheel)} bloquee la última rueda cuando
+     * la posición indicada es mayor que el número de ruedas, y que dicha
+     * rueda permanezca con su símbolo original tras intentar girarla.
+     */    
     @Test
     public void shouldLockLastWheelWhenPositionGreaterThanSize()
     {
@@ -233,7 +334,14 @@ public class SlotMachineC2Test
         assertTrue(machine.ok());
     }
  
-        
+    
+    //Pruebas del metodo unlock(int wheel)
+    
+    /**
+     * Verifica que {@code unlock(int wheel)} no realice ninguna acción y
+     * marque la operación como no exitosa cuando la máquina no tiene
+     * ninguna rueda.
+     */    
     @Test
     public void shouldNotUnlockWheelWhenThereAreNone()
     {
@@ -242,7 +350,11 @@ public class SlotMachineC2Test
         assertFalse(machine.ok());
     }
     
-    
+    /**
+     * Verifica que {@code unlock(int wheel)} desbloquee la primera rueda
+     * cuando la posición indicada es menor que uno, permitiendo que
+     * {@code spin} vuelva a modificarla.
+     */
     @Test
     public void shouldUnlockFirstWheelWhenPositionLessThanOne()
     {
@@ -259,6 +371,11 @@ public class SlotMachineC2Test
         assertTrue(machine.ok());
     }
     
+    /**
+     * Verifica que {@code unlock(int wheel)} desbloquee la última rueda
+     * cuando la posición indicada es mayor que el número de ruedas,
+     * permitiendo que {@code spin} vuelva a modificarla.
+     */
     @Test
     public void shouldUnlockLastWheelWhenPositionGreaterThanSize()
     {
@@ -274,6 +391,8 @@ public class SlotMachineC2Test
  
         assertTrue(machine.ok());
     }
+    
+    
     @Test
     public void shouldNotPlaceSymbolWhenThereAreNoWheels()
     {
@@ -546,9 +665,9 @@ public class SlotMachineC2Test
     
     
     /**
-     * Tears down the test fixture.
-     *
-     * Called after every test case method.
+     * Libera el escenario de pruebas.
+     * Se ejecuta después de cada método de prueba, eliminando la
+     * referencia a la instancia de SlotMachine utilizada.
      */
     @AfterEach
     public void tearDown()
