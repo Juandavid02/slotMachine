@@ -979,6 +979,60 @@ public class SlotMachineC2Test
 
     
     
+    
+    
+    
+    
+    @Test
+    public void shouldNotSpinStepsWhenThereAreNoWheelsOrSymbols()
+    {
+        machine.spin(1, 3);
+    
+        assertFalse(machine.ok());
+    }
+    
+    @Test
+    public void shouldSpinStepsSuccessfully()
+    {
+        machine.addSymbol(1, "red");
+        machine.addSymbol(2, "blue");
+        machine.addWheel(1);
+    
+        machine.spin(1, 2);
+    
+        assertTrue(machine.ok());
+    }
+    
+    @Test
+    public void shouldNotSpinStepsWhenWheelIsLocked()
+    {
+        machine.addSymbol(1, "red");
+        machine.addSymbol(2, "blue");
+        machine.addWheel(1);
+        machine.placeSymbol(1, "red");
+        machine.lock(1);
+    
+        machine.spin(1, 3);
+    
+        assertFalse(machine.ok());
+        assertEquals("red", machine.configuration()[0]);
+    }
+    
+    
+    
+    
+    
+    
+    @Test
+    public void shouldBeOkInitially()
+    {
+        assertTrue(machine.ok());
+    }
+    
+    
+    
+    
+    
     /**
      * Libera el escenario de pruebas.
      * Se ejecuta después de cada método de prueba, eliminando la
