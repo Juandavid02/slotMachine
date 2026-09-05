@@ -572,14 +572,20 @@ public class SlotMachine
             }
             ok = true;
             if (!(wheel1 == wheel2)){
-                int idx1 = wheels.get(wheel1 - 1).getVisibleIndex();
-                int idx2 = wheels.get(wheel2 - 1).getVisibleIndex();                
-                wheels.get(wheel1 - 1).setVisibleIndex(idx2);
-                wheels.get(wheel2 - 1).setVisibleIndex(idx1);
-                if (flag){
-                    JOptionPane.showMessageDialog(null, mensaje);
-                } 
-                actualizar();
+                if (wheels.get(wheel1 - 1).isLocked() || wheels.get(wheel2 - 1).isLocked()){
+                    ok = false;
+                    JOptionPane.showMessageDialog(null, "Accion no permitida: Una de las ruedas esta bloqueada.");
+                }
+                else{
+                    int idx1 = wheels.get(wheel1 - 1).getVisibleIndex();
+                    int idx2 = wheels.get(wheel2 - 1).getVisibleIndex();                
+                    wheels.get(wheel1 - 1).setVisibleIndex(idx2);
+                    wheels.get(wheel2 - 1).setVisibleIndex(idx1);
+                    if (flag){
+                        JOptionPane.showMessageDialog(null, mensaje);
+                    } 
+                    actualizar();
+                }
             }
             else {
                 ok = false;
@@ -615,6 +621,12 @@ public class SlotMachine
             wheel = wheels.size();
         }
         Wheel selected = wheels.get(wheel - 1);
+        if (selected.isLocked()){
+        JOptionPane.showMessageDialog(null,
+            "Accion no permitida: No se puede rotar la rueda porque esta bloqueada.");
+        ok = false;
+        return;
+        }
         for (int i = 0; i < steps; i++){
             selected.rotate(1, symbols.size());
             actualizar();
@@ -632,22 +644,22 @@ public class SlotMachine
      * número de ruedas, y si todos los símbolos indicados existen entre los
      * símbolos disponibles.
      *
-     * @param config un arreglo con el símbolo que se desea asignar a cada
+     * @param setSymbols un arreglo con el símbolo que se desea asignar a cada
      * rueda, en el mismo orden que las ruedas
      */
-    public void setConfiguration(String[] config){
+    public void spin(String[] setSymbols){
         if (wheels.isEmpty()){
             JOptionPane.showMessageDialog(null, "Accion no permitida: No hay ruedas en la maquina.");
             ok = false;
         }
-        else if (config.length != wheels.size()){
+        else if (setSymbols.length != wheels.size()){
             JOptionPane.showMessageDialog(null, "Accion no permitida: La cantidad de simbolos no coincide con la cantidad de ruedas.");
             ok = false;
         }
         else {
             boolean allValid = true;
-            for (int i = 0; i < config.length; i++){
-                if (!symbols.contains(config[i])){
+            for (int i = 0; i < setSymbols.length; i++){
+                if (!symbols.contains(setSymbols[i])){
                     allValid = false;
                 }
             }
@@ -657,9 +669,20 @@ public class SlotMachine
             }
     
             else {
-                for (int i = 0; i < config.length; i++){
-                    int index = symbols.indexOf(config[i]);
-                    wheels.get(i).setVisibleIndex(index);
+                boolean anyLocked = false;
+                String mensaje = "Se completo la accion";
+                for (int i = 0; i < setSymbols.length; i++){
+                    if (!wheels.get(i).isLocked()){
+                        int index = symbols.indexOf(setSymbols[i]);
+                        wheels.get(i).setVisibleIndex(index);
+                    }
+                    else {
+                        mensaje += ", excepto para la rueda numero " + (i + 1) + " porque esta bloqueada";
+                        anyLocked = true;
+                    }
+                }
+                if (anyLocked){
+                JOptionPane.showMessageDialog(null, mensaje);
                 }
                 ok = true;
                 girada = true;
