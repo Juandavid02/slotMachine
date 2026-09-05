@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
  * Verifica el comportamiento del ciclo 1 y 2: agregar/eliminar ruedas y
  * símbolos, ubicar y girar símbolos, bloqueo/desbloqueo de ruedas, y
  * detección de jackpot, incluyendo los casos límites en las posiciones
- * fuera de rango para revisar como esta validandoesos datos el sistema.
+ * fuera de rango para revisar como esta validando esos datos el sistema.
  *
  * @author Juan David Rojas y César Morales
  * @version 1.0 (05-09-2026)
@@ -983,6 +983,10 @@ public class SlotMachineC2Test
     
     
     
+    /**
+     * Verifica que spin(int, int) rechace la operación cuando la máquina
+     * no tiene símbolos o no tiene ruedas, sin ejecutar ninguna rotación.
+     */
     @Test
     public void shouldNotSpinStepsWhenThereAreNoWheelsOrSymbols()
     {
@@ -991,6 +995,47 @@ public class SlotMachineC2Test
         assertFalse(machine.ok());
     }
     
+    /**
+     * Verifica que spin(int, int) ajuste automáticamente a la primera
+     * rueda cuando la posición indicada es menor a uno, y complete la
+     * rotación exitosamente sobre esa rueda.
+     */
+    @Test
+    public void shouldAdjustFirstWheelWhenSpinningStepsWithPositionLessThanOne()
+    {
+        machine.addSymbol(1, "red");
+        machine.addSymbol(2, "blue");
+        machine.addWheel(1);
+        machine.addWheel(2);
+    
+        machine.spin(0, 2);
+    
+        assertTrue(machine.ok());
+    }
+    
+    /**
+     * Verifica que spin(int, int) ajuste automáticamente a la última
+     * rueda cuando la posición indicada excede el número de ruedas
+     * existentes, y complete la rotación exitosamente sobre esa rueda.
+     */
+    @Test
+    public void shouldAdjustLastWheelWhenSpinningStepsWithPositionGreaterThanSize()
+    {
+        machine.addSymbol(1, "red");
+        machine.addSymbol(2, "blue");
+        machine.addWheel(1);
+        machine.addWheel(2);
+    
+        machine.spin(10, 2);
+    
+        assertTrue(machine.ok());
+    }
+    
+    /**
+     * Verifica que spin(int, int) complete la rotación exitosamente
+     * cuando la rueda indicada existe, no está bloqueada, y hay
+     * símbolos disponibles en la máquina.
+     */
     @Test
     public void shouldSpinStepsSuccessfully()
     {
@@ -1003,6 +1048,11 @@ public class SlotMachineC2Test
         assertTrue(machine.ok());
     }
     
+    /**
+     * Verifica que spin(int, int) rechace la operación cuando la rueda
+     * indicada está bloqueada, y que su símbolo permanezca sin cambios
+     * como resultado del intento.
+     */
     @Test
     public void shouldNotSpinStepsWhenWheelIsLocked()
     {
@@ -1023,6 +1073,10 @@ public class SlotMachineC2Test
     
     
     
+    /**
+     * Verifica que ok() retorne true por defecto inmediatamente después
+     * de crear una nueva máquina, antes de realizar cualquier operación.
+     */
     @Test
     public void shouldBeOkInitially()
     {
