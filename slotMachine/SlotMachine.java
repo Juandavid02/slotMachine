@@ -22,6 +22,7 @@ public class SlotMachine
     private Rectangle brazoHorizontal;
     private Rectangle brazoVertical;
     private Circle perilla;
+    private boolean cerrada;
     private boolean girada;
     // Variables constantes para dejar espacio tanto arriba como a la derecha
     private static final int MARGIN_X = 60;
@@ -44,6 +45,7 @@ public class SlotMachine
         ok = true;
         random = new Random();
         girada = false;
+        cerrada = false;
 
         machine = new Rectangle();
         machine.changeColor("gray");
@@ -69,9 +71,7 @@ public class SlotMachine
         perilla.moveHorizontal(MARGIN_X - 38);
         perilla.moveVertical(MARGIN_Y);
 
-        actualizar();
-        
-
+        actualizar(); 
     }
     
     /**
@@ -83,20 +83,22 @@ public class SlotMachine
      */
     public void addWheel(int pos)
     {   
-        Wheel wheel = new Wheel(symbols.size());
-        if (pos > wheels.size()){
-            wheels.add(wheel);
-            JOptionPane.showMessageDialog(null, "Se agrego una rueda en la ultima posicion");
+        if (!isCerrada()){
+            Wheel wheel = new Wheel(symbols.size());
+            if (pos > wheels.size()){
+                wheels.add(wheel);
+                JOptionPane.showMessageDialog(null, "Se agrego una rueda en la ultima posicion");
+            }
+            else if (pos < 1){
+                wheels.add(0, wheel);
+                JOptionPane.showMessageDialog(null, "Se agrego una rueda en la primera posicion");
+            }
+            else {
+                wheels.add(pos - 1, wheel);
+            }
+            ok=true;
+            actualizar();
         }
-        else if (pos < 1){
-            wheels.add(0, wheel);
-            JOptionPane.showMessageDialog(null, "Se agrego una rueda en la primera posicion");
-        }
-        else {
-            wheels.add(pos - 1, wheel);
-        }
-        ok=true;
-        actualizar();
     }
     
     /**
@@ -109,28 +111,161 @@ public class SlotMachine
      */
     public void delWheel(int pos)
     {   
-        if (!wheels.isEmpty()){
-            if (pos < 1 ){
-                wheels.get(0).makeInvisible();
-                wheels.remove(0);
-                JOptionPane.showMessageDialog(null, "Se elimino la primera rueda");
+        if (!isCerrada()){
+            if (!wheels.isEmpty()){
+                if (pos < 1 ){
+                    wheels.get(0).makeInvisible();
+                    wheels.remove(0);
+                    JOptionPane.showMessageDialog(null, "Se elimino la primera rueda");
+                }
+                else if (pos > wheels.size()){
+                    wheels.get(wheels.size() - 1).makeInvisible();                
+                    wheels.remove(wheels.size() - 1);
+                    JOptionPane.showMessageDialog(null, "Se elimino la ultima rueda");
+                }
+                else{
+                    wheels.get(pos - 1).makeInvisible();
+                    wheels.remove(pos - 1);
+                }
+                ok = true;
             }
-            else if (pos > wheels.size()){
-                wheels.get(wheels.size() - 1).makeInvisible();                
-                wheels.remove(wheels.size() - 1);
-                JOptionPane.showMessageDialog(null, "Se elimino la ultima rueda");
+            else {
+                JOptionPane.showMessageDialog(null, "Accion no permitida: No hay paredes para eliminar");
+                ok = false;
+            }
+            actualizar();
+        }
+    }
+    
+    public void swap(int wheel1, int wheel2){
+        if (!isCerrada()){
+            if (!wheels.isEmpty()){
+                boolean flag = false; 
+                String mensaje = "";
+                if (wheel1<1){
+                    wheel1 = 1;
+                    mensaje += "Se va a intercambiar la primera rueda ya que el valor dado es una rueda en una posicion menor que 1.\n";
+                    flag = true;
+                }
+                if (wheel2<1){
+                    wheel2 = 1;
+                    mensaje += "Se va a intercambiar la primera rueda ya que el valor dado es una rueda en una posicion  menor que 1.\n";
+                    flag = true;
+                }
+                if (wheel1 > wheels.size()){
+                    wheel1 = wheels.size();
+                    mensaje += "Se va a intercambiar la ultima rueda ya que el valor dado es una rueda en una posicion que es mayor que el tamaño.\n";
+                    flag = true;
+                }
+                if (wheel2 > wheels.size()){
+                    wheel2 = wheels.size();
+                    mensaje += "Se va a intercambiar la ultima rueda ya que el valor dado es una rueda en una posicion que es mayor que el tamaño.\n";
+                    flag = true;
+                }
+                ok = true;
+                if (!(wheel1 == wheel2)){
+                    if (wheels.get(wheel1 - 1).isLocked() || wheels.get(wheel2 - 1).isLocked()){
+                        ok = false;
+                        JOptionPane.showMessageDialog(null, "Accion no permitida: Una de las ruedas esta bloqueada.");
+                    }
+                    else{
+                        int idx1 = wheels.get(wheel1 - 1).getVisibleIndex();
+                        int idx2 = wheels.get(wheel2 - 1).getVisibleIndex();                
+                        wheels.get(wheel1 - 1).setVisibleIndex(idx2);
+                        wheels.get(wheel2 - 1).setVisibleIndex(idx1);
+                        if (flag){
+                            JOptionPane.showMessageDialog(null, mensaje);
+                        } 
+                        actualizar();
+                    }
+                }
+                else {
+                    ok = false;
+                    JOptionPane.showMessageDialog(null, "Accion no permitida: Las ruedas son las mismas");
+                }
+            }
+             else{
+                 JOptionPane.showMessageDialog(null, "Accion no permitida: No hay ruedas para cambiar.");
+                ok = false;    
+            }     
+        }
+    }
+    
+    /**
+     * Bloquea la rueda indicada para que no sea modificada por los métodos
+     * de giro (spin). Si la posición indicada es menor que uno, se bloquea
+     * la primera rueda; si es mayor que el número de ruedas, se bloquea la
+     * última, mostrando en ambos casos un mensaje informativo. La operación
+     * solo se realiza si la máquina tiene al menos una rueda.
+     *
+     * @param wheel la posición de la rueda que se desea bloquear
+     */ 
+    public void lock(int wheel){
+        if (!isCerrada()){
+            if (!wheels.isEmpty()){
+                boolean flag = false;
+                String  mensaje  = "";
+                if (wheel<1){
+                    wheel = 1;
+                    mensaje += "Se va a usar la primera rueda ya que el valor dado es una rueda en una posicion menor que 1.\n";
+                    flag = true;
+                }
+                else if (wheel > wheels.size()){
+                    wheel = wheels.size();
+                    mensaje += "Se va a usar la ultima rueda ya que el valor dado es una rueda que esta a fuera del tamaño.\n";
+                    flag = true;
+                }
+                wheels.get(wheel-1).setLocked(true);
+                ok = true;
+                if (flag){
+                        JOptionPane.showMessageDialog(null, mensaje);
+                    } 
+                actualizar();
             }
             else{
-                wheels.get(pos - 1).makeInvisible();
-                wheels.remove(pos - 1);
+                JOptionPane.showMessageDialog(null, "Accion no permitida: No hay ruedas para bloquear.");
+                ok = false;
             }
-            ok = true;
         }
-        else {
-            JOptionPane.showMessageDialog(null, "Accion no permitida: No hay paredes para eliminar");
-            ok = false;
+    }
+    
+    /**
+     * Desbloquea la rueda indicada, permitiendo que vuelva a ser modificada
+     * por los métodos de giro (spin). Si la posición indicada es menor que
+     * uno, se desbloquea la primera rueda; si es mayor que el número de
+     * ruedas, se desbloquea la última, mostrando en ambos casos un mensaje
+     * informativo. La operación solo se realiza si la máquina tiene al
+     * menos una rueda.
+     *
+     * @param wheel la posición de la rueda que se desea desbloquear
+     */
+    public void unlock(int wheel){
+        if (!isCerrada()){
+            if (!wheels.isEmpty()){
+                boolean flag = false;
+                String  mensaje  = "";
+                if (wheel<1){
+                    wheel = 1;
+                    mensaje += "Se va a usar la primera rueda ya que el valor dado es una rueda en una posicion menor que 1.\n";
+                    flag = true;
+                }
+                else if (wheel > wheels.size()){
+                    wheel = wheels.size();
+                    mensaje += "Se va a usar la ultima rueda ya que el valor dado es una rueda que esta a fuera del tamaño.\n";
+                    flag = true;
+                }      
+                wheels.get(wheel - 1).setLocked(false);
+                ok = true;
+                if (flag){
+                        JOptionPane.showMessageDialog(null, mensaje);
+                } 
+                actualizar();
+            }
+            else {
+                JOptionPane.showMessageDialog(null, "Accion no permitida: No hay ruedas para desbloquear.");
+                ok = false;
+            }
         }
-        actualizar();
     }
     
     /**
@@ -146,35 +281,37 @@ public class SlotMachine
      */
     public void addSymbol(int pos, String color)
     {
-        if (!color.equals("red") &&
-            !color.equals("black") &&
-            !color.equals("blue") &&
-            !color.equals("yellow") &&
-            !color.equals("green") &&
-            !color.equals("white") &&
-            !color.equals("orange") &&
-            !color.equals("cyan")){
-            JOptionPane.showMessageDialog(null,
-                "Accion no permitida: El color no esta disponible.");
-            ok = false;
-        }
-        else if (symbols.contains(color)){
-            JOptionPane.showMessageDialog(null, "Accion no permitida: El color ya se encuentra entre las opciones");
-            ok = false;
-        }        
-        else {
-            if (pos > symbols.size()){
-                symbols.add(color);
+        if (!isCerrada()){
+            if (!color.equals("red") &&
+                !color.equals("black") &&
+                !color.equals("blue") &&
+                !color.equals("yellow") &&
+                !color.equals("green") &&
+                !color.equals("white") &&
+                !color.equals("orange") &&
+                !color.equals("cyan")){
+                JOptionPane.showMessageDialog(null,
+                    "Accion no permitida: El color no esta disponible.");
+                ok = false;
             }
-            else if (pos <= 1){
-                symbols.add(0, color);
-            }
+            else if (symbols.contains(color)){
+                JOptionPane.showMessageDialog(null, "Accion no permitida: El color ya se encuentra entre las opciones");
+                ok = false;
+            }        
             else {
-                symbols.add(pos - 1, color);
+                if (pos > symbols.size()){
+                    symbols.add(color);
+                }
+                else if (pos <= 1){
+                    symbols.add(0, color);
+                }
+                else {
+                    symbols.add(pos - 1, color);
+                }
+                ok = true;
             }
-            ok = true;
+            actualizar();
         }
-        actualizar();
     }
     
     /**
@@ -186,12 +323,56 @@ public class SlotMachine
      */
     public void delSymbol(String color)
     {
-        ok = symbols.remove(color);
-        if (!ok){
-            JOptionPane.showMessageDialog(null, "Accion no permitida: No se puede eliminar el símbolo " + color + " porque no existe.");
+        if (!isCerrada()){
+            ok = symbols.remove(color);
+            if (!ok){
+                JOptionPane.showMessageDialog(null, "Accion no permitida: No se puede eliminar el símbolo " + color + " porque no existe.");
+            }
+            actualizar();;
         }
-        actualizar();;
     }
+    
+    /**
+     * Coloca un símbolo específico en la rueda indicada.
+     * El símbolo debe existir entre los símbolos disponibles.
+     * Si la posición de la rueda es menor o igual a uno, se selecciona
+     * la primera rueda. Si la posición es mayor que el número de ruedas,
+     * se selecciona la última rueda.
+     *
+     * @param wheel la posición de la rueda donde se colocará el símbolo
+     * @param symbol el símbolo que se desea colocar en la rueda
+     */
+    public void placeSymbol(int wheel, String symbol)
+    {
+        if (!isCerrada()){
+            if (wheels.isEmpty()){
+                ok = false;
+                JOptionPane.showMessageDialog(null, "Accion no permitida: No hay ruletas.");
+                actualizar();
+            }
+            else {
+                int index = symbols.indexOf(symbol);
+                if (index == -1){
+                    JOptionPane.showMessageDialog(null, "Accion no permitida: No se encontro el simbolo porque no existe.");
+                    ok = false;
+                }
+                else {
+                    if (wheel <= 1 ){
+                        wheel = 1;
+                    }
+                    else if (wheel > wheels.size()){
+                        wheel = wheels.size();
+                    }
+                    wheels.get(wheel-1).setVisibleIndex(index);
+                    ok = true;
+                    girada = true;
+                    if (!isJackpot()){
+                        actualizar();
+                    }
+                }
+            }
+        }
+    }    
     
     /**
      * Gira una rueda específica y la establece en un símbolo seleccionado
@@ -229,19 +410,120 @@ public class SlotMachine
      */
     public void spin(int wheel)
     {
-        if (symbols.isEmpty() || wheels.isEmpty()){
-            JOptionPane.showMessageDialog(null, "Accion no permitida: No se puede girar la ruleta porque esta vacia la ruleta o no hay simbolos disponobles.");
-            ok = false;
-        }
-        else{
-            turnWheel(wheel);
-            ok = true;
-            girada = true;
-        }
-        if (!isJackpot()){
-                actualizar();
+        if (!isCerrada()){
+            if (symbols.isEmpty() || wheels.isEmpty()){
+                JOptionPane.showMessageDialog(null, "Accion no permitida: No se puede girar la ruleta porque esta vacia la ruleta o no hay simbolos disponobles.");
+                ok = false;
+            }
+            else{
+                turnWheel(wheel);
+                ok = true;
+                girada = true;
+            }
+            if (!isJackpot()){
+                    actualizar();
+            }
         }
     }
+    
+    /**
+     * Rota una rueda específica un número determinado de pasos, mostrando
+     * el avance paso a paso para simular el efecto físico de rotación.
+     * La posición de la rueda se ajusta a la primera o última rueda si la
+     * posición indicada está fuera del rango válido
+     *
+     * @param wheel la posición de la rueda que se desea rotar
+     * @param steps el número de pasos que debe avanzar la rueda
+     */
+    public void spin(int wheel, int steps){
+        if (!isCerrada()){
+            if (symbols.isEmpty() || wheels.isEmpty()){
+                JOptionPane.showMessageDialog(null,
+                    "Accion no permitida: No se puede rotar la rueda porque esta vacia la ruleta o no hay simbolos disponibles.");
+                ok = false;
+                return;
+            }
+            if (wheel <= 1){
+                wheel = 1;
+            }
+            if (wheel > wheels.size()){
+                wheel = wheels.size();
+            }
+            Wheel selected = wheels.get(wheel - 1);
+            if (selected.isLocked()){
+            JOptionPane.showMessageDialog(null,
+                "Accion no permitida: No se puede rotar la rueda porque esta bloqueada.");
+            ok = false;
+            return;
+            }
+            for (int i = 0; i < steps; i++){
+                selected.rotate(1, symbols.size());
+                actualizar();
+                Canvas.getCanvas().wait(100);
+            }
+            ok = true;
+            isJackpot();
+        }
+    }
+    
+    /**
+     * Establece la configuración completa de la máquina tragamonedas de una
+     * sola vez, asignando a cada rueda el símbolo correspondiente del arreglo
+     * recibido, en el mismo orden de las ruedas.
+     * La operación solo se realiza si el número de símbolos coincide con el
+     * número de ruedas, y si todos los símbolos indicados existen entre los
+     * símbolos disponibles.
+     *
+     * @param setSymbols un arreglo con el símbolo que se desea asignar a cada
+     * rueda, en el mismo orden que las ruedas
+     */
+    public void spin(String[] setSymbols){
+        if (!isCerrada()){
+            if (wheels.isEmpty()){
+                JOptionPane.showMessageDialog(null, "Accion no permitida: No hay ruedas en la maquina.");
+                ok = false;
+            }
+            else if (setSymbols.length != wheels.size()){
+                JOptionPane.showMessageDialog(null, "Accion no permitida: La cantidad de simbolos no coincide con la cantidad de ruedas.");
+                ok = false;
+            }
+            else {
+                boolean allValid = true;
+                for (int i = 0; i < setSymbols.length; i++){
+                    if (!symbols.contains(setSymbols[i])){
+                        allValid = false;
+                    }
+                }
+                if (!allValid){
+                    JOptionPane.showMessageDialog(null, "Accion no permitida: Uno o mas simbolos indicados no existen.");
+                    ok = false;
+                }
+        
+                else {
+                    boolean anyLocked = false;
+                    String mensaje = "Se completo la accion";
+                    for (int i = 0; i < setSymbols.length; i++){
+                        if (!wheels.get(i).isLocked()){
+                            int index = symbols.indexOf(setSymbols[i]);
+                            wheels.get(i).setVisibleIndex(index);
+                        }
+                        else {
+                            mensaje += ", excepto para la rueda numero " + (i + 1) + " porque esta bloqueada";
+                            anyLocked = true;
+                        }
+                    }
+                    if (anyLocked){
+                    JOptionPane.showMessageDialog(null, mensaje);
+                    }
+                    ok = true;
+                    girada = true;
+                }
+            }
+            if (!isJackpot()){
+                actualizar();
+            }
+        }
+    }    
     
     /**
      * Gira todas las ruedas de la máquina tragamonedas.
@@ -250,85 +532,23 @@ public class SlotMachine
      */
     public void spin()
     {
-        if (symbols.isEmpty() || wheels.isEmpty()){
-            JOptionPane.showMessageDialog(null, "Accion no permitida: No se puede girar la ruleta porque esta vacia la ruleta o no hay ruletas disponobles.");
-            ok = false;
-        }
-        else{
-           for (int i = 1; i <= wheels.size(); i++){
-                turnWheel(i);
-            }
-            girada = true;
-            ok = true;
-            if (!isJackpot()){
-                actualizar();
-            }
-        }
-    }
-    /**
-     * Coloca un símbolo específico en la rueda indicada.
-     * El símbolo debe existir entre los símbolos disponibles.
-     * Si la posición de la rueda es menor o igual a uno, se selecciona
-     * la primera rueda. Si la posición es mayor que el número de ruedas,
-     * se selecciona la última rueda.
-     *
-     * @param wheel la posición de la rueda donde se colocará el símbolo
-     * @param symbol el símbolo que se desea colocar en la rueda
-     */
-    public void placeSymbol(int wheel, String symbol)
-    {
-        if (wheels.isEmpty()){
-            ok = false;
-            JOptionPane.showMessageDialog(null, "Accion no permitida: No hay ruletas.");
-            actualizar();
-        }
-        else {
-            int index = symbols.indexOf(symbol);
-            if (index == -1){
-                JOptionPane.showMessageDialog(null, "Accion no permitida: No se encontro el simbolo porque no existe.");
+        if (!isCerrada()){
+            if (symbols.isEmpty() || wheels.isEmpty()){
+                JOptionPane.showMessageDialog(null, "Accion no permitida: No se puede girar la ruleta porque esta vacia la ruleta o no hay ruletas disponobles.");
                 ok = false;
             }
-            else {
-                if (wheel <= 1 ){
-                    wheel = 1;
+            else{
+               for (int i = 1; i <= wheels.size(); i++){
+                    turnWheel(i);
                 }
-                else if (wheel > wheels.size()){
-                    wheel = wheels.size();
-                }
-                wheels.get(wheel-1).setVisibleIndex(index);
-                ok = true;
                 girada = true;
+                ok = true;
                 if (!isJackpot()){
                     actualizar();
                 }
             }
         }
-
     }
-    
-    /**
-     * Obtiene la configuración actual de la máquina tragamonedas.
-     * La configuración contiene el símbolo que se muestra actualmente
-     * en cada rueda, en el mismo orden de las ruedas.
-     *
-     * @return un arreglo que contiene el símbolo actual de cada rueda
-     */
-    //String[] es un arreglo con tamaño fijo accediendo con config[i]
-    public String[] configuration()
-    {
-        String [] config = new String[wheels.size()];
-        for (int i = 0; i < wheels.size(); i++){
-            if (!symbols.isEmpty()){
-                int idx = wheels.get(i).getVisibleIndex();
-                config[i] = symbols.get(idx);
-            }
-            else{
-                config[i] = null; 
-            }
-        }
-        return config;
-    }
-
 
     /**
      * Obtiene todos los símbolos disponibles en la máquina tragamonedas.
@@ -343,6 +563,34 @@ public class SlotMachine
     }
     
     /**
+     * Obtiene la configuración actual de la máquina tragamonedas.
+     * La configuración contiene el símbolo que se muestra actualmente
+     * en cada rueda, en el mismo orden de las ruedas.
+     *
+     * @return un arreglo que contiene el símbolo actual de cada rueda o null si 
+     * la maquina esta cerrada
+     */
+    //String[] es un arreglo con tamaño fijo accediendo con config[i]
+    public String[] configuration(){
+        if (!isCerrada()){
+            String [] config = new String[wheels.size()];
+            for (int i = 0; i < wheels.size(); i++){
+                if (!symbols.isEmpty()){
+                    int idx = wheels.get(i).getVisibleIndex();
+                    config[i] = symbols.get(idx);
+                }
+                else{
+                    config[i] = null; 
+                }
+            }
+            return config;
+        }
+        else {
+            return null;
+        }
+    }
+
+    /**
      * Obtiene el número de símbolos diferentes disponibles en la máquina
      * tragamonedas.
      *
@@ -351,49 +599,6 @@ public class SlotMachine
     public int distinctSymbols()
     {
         return symbols.size();
-    }
-
-    /**
-     * Comprueba si la máquina tragamonedas tiene un jackpot.
-     * Un jackpot ocurre cuando hay al menos dos ruedas y todas muestran
-     * el mismo símbolo. Si ocurre un jackpot, la máquina cambia su color
-     * a verde y muestra un mensaje de felicitación.
-     *
-     * @return true si todas las ruedas muestran el mismo símbolo y hay
-     * al menos dos ruedas; false en caso contrario
-     */
-    public boolean isJackpot(){
-        String [] config = configuration();
-        if (!girada || wheels.size() < 2 || symbols.size() < 2){
-            return false;
-        }
-        else if (config.length > 0){
-            for (int i=1; i < config.length; i++){
-                if (!config[i].equals(config[0])){
-                    return false;
-                }
-            }
-            machine.changeColor("green");
-            brazoHorizontal.changeColor("green");
-            brazoVertical.changeColor("green");
-            perilla.changeColor("yellow");
-            actualizar();
-            JOptionPane.showMessageDialog(null, "¡FELICIDADES HAS GANADO!");
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
-    
-    /**
-     * Comprueba si la última operación fue exitosa.
-     *
-     * @return true si la última operación fue exitosa; false en caso contrario
-     */
-    public boolean ok()
-    {
-        return ok;
     }
     
     /**
@@ -448,9 +653,10 @@ public class SlotMachine
      * Ademas cambia el valor de visble a true
      */
     public void makeVisible(){
-        visible = true;
-        actualizar();
-        
+        if (!isCerrada()){
+            visible = true;
+            actualizar();
+        }
     }
     
     /**
@@ -459,8 +665,10 @@ public class SlotMachine
      * Ademas cambia el valor de visble a false
      */
     public void makeInvisible(){
-        visible = false;
-        actualizar();
+        if (!isCerrada()){
+            visible = false;
+            actualizar();
+        }
     }
     
     /**
@@ -473,223 +681,73 @@ public class SlotMachine
     }
     
     /**
-     * Bloquea la rueda indicada para que no sea modificada por los métodos
-     * de giro (spin). Si la posición indicada es menor que uno, se bloquea
-     * la primera rueda; si es mayor que el número de ruedas, se bloquea la
-     * última, mostrando en ambos casos un mensaje informativo. La operación
-     * solo se realiza si la máquina tiene al menos una rueda.
+     * Comprueba si la máquina tragamonedas tiene un jackpot.
+     * Un jackpot ocurre cuando hay al menos dos ruedas y todas muestran
+     * el mismo símbolo. Si ocurre un jackpot, la máquina cambia su color
+     * a verde y muestra un mensaje de felicitación.
      *
-     * @param wheel la posición de la rueda que se desea bloquear
-     */ 
-    public void lock(int wheel){
-        if (!wheels.isEmpty()){
-            boolean flag = false;
-            String  mensaje  = "";
-            if (wheel<1){
-                wheel = 1;
-                mensaje += "Se va a usar la primera rueda ya que el valor dado es una rueda en una posicion menor que 1.\n";
-                flag = true;
+     * @return true si todas las ruedas muestran el mismo símbolo y hay
+     * al menos dos ruedas; false en caso contrario
+     */
+    public boolean isJackpot(){
+        String [] config = configuration();
+        if (config == null || !girada || wheels.size() < 2 || symbols.size() < 2){
+            return false;
+        }
+        else if (config.length > 0){
+            for (int i=1; i < config.length; i++){
+                if (!config[i].equals(config[0])){
+                    return false;
+                }
             }
-            else if (wheel > wheels.size()){
-                wheel = wheels.size();
-                mensaje += "Se va a usar la ultima rueda ya que el valor dado es una rueda que esta a fuera del tamaño.\n";
-                flag = true;
-            }
-            wheels.get(wheel-1).setLocked(true);
-            ok = true;
-            if (flag){
-                    JOptionPane.showMessageDialog(null, mensaje);
-                } 
+            machine.changeColor("green");
+            brazoHorizontal.changeColor("green");
+            brazoVertical.changeColor("green");
+            perilla.changeColor("yellow");
             actualizar();
+            JOptionPane.showMessageDialog(null, "¡FELICIDADES HAS GANADO!");
+            return true;
         }
         else{
-            JOptionPane.showMessageDialog(null, "Accion no permitida: No hay ruedas para bloquear.");
-            ok = false;
+            return false;
         }
-            
     }
     
     /**
-     * Desbloquea la rueda indicada, permitiendo que vuelva a ser modificada
-     * por los métodos de giro (spin). Si la posición indicada es menor que
-     * uno, se desbloquea la primera rueda; si es mayor que el número de
-     * ruedas, se desbloquea la última, mostrando en ambos casos un mensaje
-     * informativo. La operación solo se realiza si la máquina tiene al
-     * menos una rueda.
+     * Verifica si la máquina ya fue cerrada con exit(). Si es así, muestra
+     * un mensaje informativo y marca la operación como no exitosa.
      *
-     * @param wheel la posición de la rueda que se desea desbloquear
+     * @return true si la máquina está cerrada false en caso contrario
      */
-    public void unlock(int wheel){
-        if (!wheels.isEmpty()){
-            boolean flag = false;
-            String  mensaje  = "";
-            if (wheel<1){
-                wheel = 1;
-                mensaje += "Se va a usar la primera rueda ya que el valor dado es una rueda en una posicion menor que 1.\n";
-                flag = true;
-            }
-            else if (wheel > wheels.size()){
-                wheel = wheels.size();
-                mensaje += "Se va a usar la ultima rueda ya que el valor dado es una rueda que esta a fuera del tamaño.\n";
-                flag = true;
-            }      
-            wheels.get(wheel - 1).setLocked(false);
-            ok = true;
-            if (flag){
-                    JOptionPane.showMessageDialog(null, mensaje);
-            } 
-            actualizar();
-        }
-        else {
-            JOptionPane.showMessageDialog(null, "Accion no permitida: No hay ruedas para desbloquear.");
+    private boolean isCerrada(){
+        if (cerrada){
+            JOptionPane.showMessageDialog(null, "Accion no permitida: la maquina fue cerrada con exit() y ya no se puede usar.");
             ok = false;
         }
+        return cerrada;
     }
-    
-    public void swap(int wheel1, int wheel2){
-        if (!wheels.isEmpty()){
-            boolean flag = false; 
-            String mensaje = "";
-            if (wheel1<1){
-                wheel1 = 1;
-                mensaje += "Se va a intercambiar la primera rueda ya que el valor dado es una rueda en una posicion menor que 1.\n";
-                flag = true;
-            }
-            if (wheel2<1){
-                wheel2 = 1;
-                mensaje += "Se va a intercambiar la primera rueda ya que el valor dado es una rueda en una posicion  menor que 1.\n";
-                flag = true;
-            }
-            if (wheel1 > wheels.size()){
-                wheel1 = wheels.size();
-                mensaje += "Se va a intercambiar la ultima rueda ya que el valor dado es una rueda en una posicion que es mayor que el tamaño.\n";
-                flag = true;
-            }
-            if (wheel2 > wheels.size()){
-                wheel2 = wheels.size();
-                mensaje += "Se va a intercambiar la ultima rueda ya que el valor dado es una rueda en una posicion que es mayor que el tamaño.\n";
-                flag = true;
-            }
-            ok = true;
-            if (!(wheel1 == wheel2)){
-                if (wheels.get(wheel1 - 1).isLocked() || wheels.get(wheel2 - 1).isLocked()){
-                    ok = false;
-                    JOptionPane.showMessageDialog(null, "Accion no permitida: Una de las ruedas esta bloqueada.");
-                }
-                else{
-                    int idx1 = wheels.get(wheel1 - 1).getVisibleIndex();
-                    int idx2 = wheels.get(wheel2 - 1).getVisibleIndex();                
-                    wheels.get(wheel1 - 1).setVisibleIndex(idx2);
-                    wheels.get(wheel2 - 1).setVisibleIndex(idx1);
-                    if (flag){
-                        JOptionPane.showMessageDialog(null, mensaje);
-                    } 
-                    actualizar();
-                }
-            }
-            else {
-                ok = false;
-                JOptionPane.showMessageDialog(null, "Accion no permitida: Las ruedas son las mismas");
-            }
-        }
-         else{
-             JOptionPane.showMessageDialog(null, "Accion no permitida: No hay ruedas para cambiar.");
-            ok = false;    
-        }       
-    }
-    
+
     /**
-     * Rota una rueda específica un número determinado de pasos, mostrando
-     * el avance paso a paso para simular el efecto físico de rotación.
-     * La posición de la rueda se ajusta a la primera o última rueda si la
-     * posición indicada está fuera del rango válido
-     *
-     * @param wheel la posición de la rueda que se desea rotar
-     * @param steps el número de pasos que debe avanzar la rueda
+     * Cierra definitivamente la máquina tragamonedas.
+     * la máquina se oculta y queda bloqueada de
+     * forma permanente: ya no se pueden agregar ni eliminar ruedas o símbolos,
+     * girar, bloquear/desbloquear ruedas, ni volver a hacerla visible.
+     * Tampoco se podrá consultar su configuración final ni si
+     * hubo jackpot una vez cerrada. Esta operación no se puede deshacer.
      */
-    public void spin(int wheel, int steps){
-        if (symbols.isEmpty() || wheels.isEmpty()){
-            JOptionPane.showMessageDialog(null,
-                "Accion no permitida: No se puede rotar la rueda porque esta vacia la ruleta o no hay simbolos disponibles.");
-            ok = false;
-            return;
-        }
-        if (wheel <= 1){
-            wheel = 1;
-        }
-        if (wheel > wheels.size()){
-            wheel = wheels.size();
-        }
-        Wheel selected = wheels.get(wheel - 1);
-        if (selected.isLocked()){
-        JOptionPane.showMessageDialog(null,
-            "Accion no permitida: No se puede rotar la rueda porque esta bloqueada.");
-        ok = false;
-        return;
-        }
-        for (int i = 0; i < steps; i++){
-            selected.rotate(1, symbols.size());
-            actualizar();
-            Canvas.getCanvas().wait(100);
-        }
+    public void exit(){
+        cerrada = true;
+        makeInvisible();
         ok = true;
-        isJackpot();
     }
     
     /**
-     * Establece la configuración completa de la máquina tragamonedas de una
-     * sola vez, asignando a cada rueda el símbolo correspondiente del arreglo
-     * recibido, en el mismo orden de las ruedas.
-     * La operación solo se realiza si el número de símbolos coincide con el
-     * número de ruedas, y si todos los símbolos indicados existen entre los
-     * símbolos disponibles.
+     * Comprueba si la última operación fue exitosa.
      *
-     * @param setSymbols un arreglo con el símbolo que se desea asignar a cada
-     * rueda, en el mismo orden que las ruedas
+     * @return true si la última operación fue exitosa; false en caso contrario
      */
-    public void spin(String[] setSymbols){
-        if (wheels.isEmpty()){
-            JOptionPane.showMessageDialog(null, "Accion no permitida: No hay ruedas en la maquina.");
-            ok = false;
-        }
-        else if (setSymbols.length != wheels.size()){
-            JOptionPane.showMessageDialog(null, "Accion no permitida: La cantidad de simbolos no coincide con la cantidad de ruedas.");
-            ok = false;
-        }
-        else {
-            boolean allValid = true;
-            for (int i = 0; i < setSymbols.length; i++){
-                if (!symbols.contains(setSymbols[i])){
-                    allValid = false;
-                }
-            }
-            if (!allValid){
-                JOptionPane.showMessageDialog(null, "Accion no permitida: Uno o mas simbolos indicados no existen.");
-                ok = false;
-            }
-    
-            else {
-                boolean anyLocked = false;
-                String mensaje = "Se completo la accion";
-                for (int i = 0; i < setSymbols.length; i++){
-                    if (!wheels.get(i).isLocked()){
-                        int index = symbols.indexOf(setSymbols[i]);
-                        wheels.get(i).setVisibleIndex(index);
-                    }
-                    else {
-                        mensaje += ", excepto para la rueda numero " + (i + 1) + " porque esta bloqueada";
-                        anyLocked = true;
-                    }
-                }
-                if (anyLocked){
-                JOptionPane.showMessageDialog(null, mensaje);
-                }
-                ok = true;
-                girada = true;
-            }
-        }
-        if (!isJackpot()){
-            actualizar();
-        }
+    public boolean ok()
+    {
+        return ok;
     }
 }

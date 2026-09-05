@@ -1028,9 +1028,103 @@ public class SlotMachineC2Test
     {
         assertTrue(machine.ok());
     }
+        
+    // Pruebas del metodo exit()
     
+    /**
+     * Verifica que {@code exit()} deje la máquina tragamonedas en estado
+     * no visible.
+     */
+    @Test
+    public void shouldBeInvisibleAfterExit()
+    {
+        machine.exit();
     
+        assertFalse(machine.isVisible());
+        assertTrue(machine.ok());
+    }
     
+    /**
+     * Verifica que tras llamar a {@code exit()} {@code makeVisible()} no
+     * logre volver a mostrar la máquina, ya que quedó bloqueada de forma
+     * permanente.
+     */
+    @Test
+    public void shouldNotBecomeVisibleAgainAfterExit()
+    {
+        machine.exit();
+    
+        machine.makeVisible();
+    
+        assertFalse(machine.isVisible());
+    }
+    
+    /**
+     * Verifica que, tras llamar a {@code exit()}, no se puedan seguir
+     * agregando ruedas a la máquina.
+     */
+    @Test
+    public void shouldNotAddWheelAfterExit()
+    {
+        machine.exit();
+    
+        machine.addWheel(1);
+    
+        assertFalse(machine.ok());
+        assertNull(machine.configuration());
+    }
+    
+    /**
+     * Verifica que, tras llamar a {@code exit()}, no se puedan seguir
+     * agregando símbolos a la máquina.
+     */
+    @Test
+    public void shouldNotAddSymbolAfterExit()
+    {
+        machine.exit();
+    
+        machine.addSymbol(1, "red");
+    
+        assertFalse(machine.ok());
+        assertEquals(0, machine.distinctSymbols());
+    }
+    
+    /**
+     * Verifica que, tras llamar a {@code exit()}, {@code configuration()}
+     * retorne null en vez de revelar el estado final de las ruedas.
+     */
+    @Test
+    public void shouldReturnNullConfigurationAfterExit()
+    {
+        machine.addSymbol(1, "red");
+        machine.addWheel(1);
+        machine.placeSymbol(1, "red");
+    
+        machine.exit();
+    
+        assertNull(machine.configuration());
+    }
+    
+    /**
+     * Verifica que, tras llamar a {@code exit()}, {@code isJackpot()}
+     * retorne false aunque las ruedas hubieran quedado en configuración
+     * ganadora antes de cerrar la máquina.
+     */
+    @Test
+    public void shouldNotReportJackpotAfterExit()
+    {
+        machine.addSymbol(1, "red");
+        machine.addSymbol(2, "blue");
+        machine.addWheel(1);
+        machine.addWheel(2);
+        machine.placeSymbol(1, "red");
+        machine.placeSymbol(2, "red");
+    
+        machine.exit();
+    
+        assertFalse(machine.isJackpot());
+    }
+            
     
     
     /**
