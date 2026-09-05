@@ -156,6 +156,31 @@ public class SlotMachineC2Test
         assertFalse(machine.ok());
     }
     
+       @Test
+    public void shouldDeleteExistingSymbol()
+    {
+        machine.addSymbol(1, "red");
+ 
+        machine.delSymbol("red");
+ 
+        assertEquals(0, machine.distinctSymbols());
+        assertTrue(machine.ok());
+    }
+ 
+    @Test
+    public void shouldNotDeleteNonExistingSymbol()
+    {
+        machine.addSymbol(1, "red");
+ 
+        machine.delSymbol("blue");
+ 
+        assertEquals(1, machine.distinctSymbols());
+        assertFalse(machine.ok());
+    }
+    
+    
+    
+    
     
     /**
      * Tears down the test fixture.
