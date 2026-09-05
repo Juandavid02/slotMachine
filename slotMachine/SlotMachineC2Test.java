@@ -38,6 +38,7 @@ public class SlotMachineC2Test
     
     
     //Pruebas del metodo configuration()
+    
     /**
      * Verifica que {@code configuration()} retorne un arreglo vacío cuando
      * la máquina tragamonedas no tiene ninguna rueda.
@@ -52,6 +53,7 @@ public class SlotMachineC2Test
     
     
     //Pruebas del metodo addWheel(int pos)
+    
     /**
      * Verifica que {@code addWheel(int pos)} agregue la rueda al final
      * cuando la posición indicada es mayor que el número actual de ruedas.
@@ -252,6 +254,143 @@ public class SlotMachineC2Test
     }
     
     
+    // Pruebas del metodo spin(int wheel)
+    
+    /**
+     * Verifica que {@code spin(int wheel)} no realice ningún giro y marque
+     * la operación como no exitosa cuando no hay ruedas ni símbolos
+     * disponibles.
+     */
+    @Test
+    public void shouldNotSpinWheelWhenThereAreNoWheelsOrSymbols()
+    {
+        machine.spin(1);
+    
+        assertFalse(machine.ok());
+    }
+    
+    /**
+     * Verifica que {@code spin(int wheel)} gire correctamente una rueda
+     * existente cuando hay ruedas y símbolos disponibles, dejando la
+     * operación como exitosa.
+     */
+    @Test
+    public void shouldSpinExistingWheel()
+    {
+        machine.addWheel(1);
+        machine.addSymbol(1, "red");
+        machine.addSymbol(2, "blue");
+        machine.spin(1);
+    
+        assertTrue(machine.ok());
+        assertNotNull(machine.configuration()[0]);
+    }
+    
+    /**
+     * Verifica que {@code spin(int wheel)} no modifique el símbolo visible
+     * de una rueda que se encuentra bloqueada.
+     */
+    @Test
+    public void shouldNotChangeSymbolOfLockedWheelWhenSpinning()
+    {
+        machine.addWheel(1);
+        machine.addSymbol(1, "red");
+        machine.addSymbol(2, "blue");
+        machine.placeSymbol(1, "red");
+        machine.lock(1);
+        machine.spin(1);
+    
+        assertEquals("red", machine.configuration()[0]);
+        assertTrue(machine.ok());
+    }
+    
+    /**
+     * Verifica que {@code spin(int wheel)} ajuste la posición a la primera
+     * rueda cuando el valor indicado es menor que uno.
+     */
+    @Test
+    public void shouldSpinFirstWheelWhenPositionLessThanOne()
+    {
+        machine.addWheel(1);
+        machine.addWheel(2);
+        machine.addSymbol(1, "red");
+        machine.addSymbol(2, "blue");
+        machine.spin(0);
+    
+        assertTrue(machine.ok());
+    }
+    
+    /**
+     * Verifica que {@code spin(int wheel)} ajuste la posición a la última
+     * rueda cuando el valor indicado es mayor que el número de ruedas.
+     */
+    @Test
+    public void shouldSpinLastWheelWhenPositionGreaterThanSize()
+    {
+        machine.addWheel(1);
+        machine.addWheel(2);
+        machine.addSymbol(1, "red");
+        machine.addSymbol(2, "blue");
+    
+        machine.spin(10);
+    
+        assertTrue(machine.ok());
+    }
+    
+    
+    // Pruebas del metodo spin()
+    
+    /**
+     * Verifica que {@code spin()} no realice ningún giro y marque la
+     * operación como no exitosa cuando no hay ruedas ni símbolos
+     * disponibles.
+     */
+    @Test
+    public void shouldNotSpinAllWheelsWhenThereAreNoWheelsOrSymbols()
+    {
+        machine.spin();
+    
+        assertFalse(machine.ok());
+    }
+    
+    /**
+     * Verifica que {@code spin()} gire todas las ruedas existentes,
+     * dejando cada una con un símbolo válido y la operación como exitosa.
+     */
+    @Test
+    public void shouldSpinAllWheels()
+    {
+        machine.addWheel(1);
+        machine.addWheel(2);
+        machine.addSymbol(1, "red");
+        machine.addSymbol(2, "blue");
+        machine.spin();
+    
+        assertTrue(machine.ok());
+        assertNotNull(machine.configuration()[0]);
+        assertNotNull(machine.configuration()[1]);
+    }
+    
+    /**
+     * Verifica que {@code spin()} no modifique el símbolo visible de una
+     * rueda bloqueada, dejando las demás ruedas con un símbolo válido.
+     */
+    @Test
+    public void shouldNotChangeSymbolOfLockedWheelWhenSpinningAll()
+    {
+        machine.addWheel(1);
+        machine.addWheel(2);
+        machine.addSymbol(1, "red");
+        machine.addSymbol(2, "blue");
+        machine.placeSymbol(1, "red");
+        machine.lock(1);
+        machine.spin();
+    
+        assertEquals("red", machine.configuration()[0]);
+        assertTrue(machine.ok());
+    }
+    
+    
     // Pruebas de visibilidad
     
     /**
@@ -449,7 +588,6 @@ public class SlotMachineC2Test
         assertTrue(machine.ok());
         assertEquals("red", machine.configuration()[1]);
     }
-    
     
     @Test
     public void shouldReturnEmptySymbolsWhenNoneAdded()
