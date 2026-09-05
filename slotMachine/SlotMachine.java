@@ -347,56 +347,18 @@ public class SlotMachine
     {
         String [] config = new String[wheels.size()];
         for (int i = 0; i < wheels.size(); i++){
-            int idx = wheels.get(i).getVisibleIndex();
-            config[i] = symbols.get(idx);
+            if (!symbols.isEmpty()){
+                int idx = wheels.get(i).getVisibleIndex();
+                config[i] = symbols.get(idx);
+            }
+            else{
+                config[i] = null; 
+            }
         }
         return config;
     }
-    /**
-     * Establece la configuración completa de la máquina tragamonedas de una
-     * sola vez, asignando a cada rueda el símbolo correspondiente del arreglo
-     * recibido, en el mismo orden de las ruedas.
-     * La operación solo se realiza si el número de símbolos coincide con el
-     * número de ruedas, y si todos los símbolos indicados existen entre los
-     * símbolos disponibles.
-     *
-     * @param config un arreglo con el símbolo que se desea asignar a cada
-     * rueda, en el mismo orden que las ruedas
-     */
-    public void setConfiguration(String[] config)
-    {
-    if (wheels.isEmpty()){
-        JOptionPane.showMessageDialog(null, "Accion no permitida: No hay ruedas en la maquina.");
-        ok = false;
-    }
-    else if (config.length != wheels.size()){
-        JOptionPane.showMessageDialog(null, "Accion no permitida: La cantidad de simbolos no coincide con la cantidad de ruedas.");
-        ok = false;
-    }
-    else {
-        boolean allValid = true;
-        for (int i = 0; i < config.length; i++){
-            if (!symbols.contains(config[i])){
-                allValid = false;
-            }
-        }
-        if (!allValid){
-            JOptionPane.showMessageDialog(null, "Accion no permitida: Uno o mas simbolos indicados no existen.");
-            ok = false;
-        }
 
-        else {
-            for (int i = 0; i < config.length; i++){
-                int index = symbols.indexOf(config[i]);
-                wheels.get(i).setVisibleIndex(index);
-            }
-            ok = true;
-        }
-    }
-    if (!isJackpot()){
-        makeVisible();
-    }
-    }
+
     /**
      * Obtiene todos los símbolos disponibles en la máquina tragamonedas.
      *
@@ -519,52 +481,6 @@ public class SlotMachine
         actualizar();
     }
     
-    public void swap(int wheel1, int wheel2){
-        if (!wheels.isEmpty()){
-            boolean flag = false; 
-            String mensaje = "";
-            if (wheel1<1){
-                wheel1 = 1;
-                mensaje += "Se va a intercambiar la primera rueda ya que el valor dado es una rueda en una posicion menor que 1.\n";
-                flag = true;
-            }
-            if (wheel2<1){
-                wheel2 = 1;
-                mensaje += "Se va a intercambiar la primera rueda ya que el valor dado es una rueda en una posicion  menor que 1.\n";
-                flag = true;
-            }
-            if (wheel1 > wheels.size()){
-                wheel1 = wheels.size();
-                mensaje += "Se va a intercambiar la ultima rueda ya que el valor dado es una rueda en una posicion que es mayor que el tamaño.\n";
-                flag = true;
-            }
-            if (wheel2 > wheels.size()){
-                wheel2 = wheels.size();
-                mensaje += "Se va a intercambiar la ultima rueda ya que el valor dado es una rueda en una posicion que es mayor que el tamaño.\n";
-                flag = true;
-            }
-            ok = true;
-            if (!(wheel1 == wheel2)){
-                int idx1 = wheels.get(wheel1 - 1).getVisibleIndex();
-                int idx2 = wheels.get(wheel2 - 1).getVisibleIndex();                
-                wheels.get(wheel1 - 1).setVisibleIndex(idx2);
-                wheels.get(wheel2 - 1).setVisibleIndex(idx1);
-                if (flag){
-                    JOptionPane.showMessageDialog(null, mensaje);
-                } 
-                actualizar();
-            }
-            else {
-                ok = false;
-                JOptionPane.showMessageDialog(null, "Accion no permitida: Las ruedas son las mismas");
-            }
-        }
-         else{
-             JOptionPane.showMessageDialog(null, "Accion no permitida: No hay ruedas para cambiar.");
-            ok = false;    
-        }       
-    }
-    
     public void lock(int wheel){
         if (!wheels.isEmpty()){
             boolean flag = false;
@@ -619,9 +535,95 @@ public class SlotMachine
             ok = false;
         }
     }
+    
+    public void swap(int wheel1, int wheel2){
+        if (!wheels.isEmpty()){
+            boolean flag = false; 
+            String mensaje = "";
+            if (wheel1<1){
+                wheel1 = 1;
+                mensaje += "Se va a intercambiar la primera rueda ya que el valor dado es una rueda en una posicion menor que 1.\n";
+                flag = true;
+            }
+            if (wheel2<1){
+                wheel2 = 1;
+                mensaje += "Se va a intercambiar la primera rueda ya que el valor dado es una rueda en una posicion  menor que 1.\n";
+                flag = true;
+            }
+            if (wheel1 > wheels.size()){
+                wheel1 = wheels.size();
+                mensaje += "Se va a intercambiar la ultima rueda ya que el valor dado es una rueda en una posicion que es mayor que el tamaño.\n";
+                flag = true;
+            }
+            if (wheel2 > wheels.size()){
+                wheel2 = wheels.size();
+                mensaje += "Se va a intercambiar la ultima rueda ya que el valor dado es una rueda en una posicion que es mayor que el tamaño.\n";
+                flag = true;
+            }
+            ok = true;
+            if (!(wheel1 == wheel2)){
+                int idx1 = wheels.get(wheel1 - 1).getVisibleIndex();
+                int idx2 = wheels.get(wheel2 - 1).getVisibleIndex();                
+                wheels.get(wheel1 - 1).setVisibleIndex(idx2);
+                wheels.get(wheel2 - 1).setVisibleIndex(idx1);
+                if (flag){
+                    JOptionPane.showMessageDialog(null, mensaje);
+                } 
+                actualizar();
+            }
+            else {
+                ok = false;
+                JOptionPane.showMessageDialog(null, "Accion no permitida: Las ruedas son las mismas");
+            }
+        }
+         else{
+             JOptionPane.showMessageDialog(null, "Accion no permitida: No hay ruedas para cambiar.");
+            ok = false;    
+        }       
+    }
+    
+    /**
+     * Establece la configuración completa de la máquina tragamonedas de una
+     * sola vez, asignando a cada rueda el símbolo correspondiente del arreglo
+     * recibido, en el mismo orden de las ruedas.
+     * La operación solo se realiza si el número de símbolos coincide con el
+     * número de ruedas, y si todos los símbolos indicados existen entre los
+     * símbolos disponibles.
+     *
+     * @param config un arreglo con el símbolo que se desea asignar a cada
+     * rueda, en el mismo orden que las ruedas
+     */
+    public void setConfiguration(String[] config){
+        if (wheels.isEmpty()){
+            JOptionPane.showMessageDialog(null, "Accion no permitida: No hay ruedas en la maquina.");
+            ok = false;
+        }
+        else if (config.length != wheels.size()){
+            JOptionPane.showMessageDialog(null, "Accion no permitida: La cantidad de simbolos no coincide con la cantidad de ruedas.");
+            ok = false;
+        }
+        else {
+            boolean allValid = true;
+            for (int i = 0; i < config.length; i++){
+                if (!symbols.contains(config[i])){
+                    allValid = false;
+                }
+            }
+            if (!allValid){
+                JOptionPane.showMessageDialog(null, "Accion no permitida: Uno o mas simbolos indicados no existen.");
+                ok = false;
+            }
+    
+            else {
+                for (int i = 0; i < config.length; i++){
+                    int index = symbols.indexOf(config[i]);
+                    wheels.get(i).setVisibleIndex(index);
+                }
+                ok = true;
+            }
+        }
+        if (!isJackpot()){
+            makeVisible();
+        }
+    }
 }
-
-
-
-
-
