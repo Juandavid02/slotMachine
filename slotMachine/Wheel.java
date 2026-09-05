@@ -57,7 +57,6 @@ public class Wheel
     {
         visibleIndex = index;
     }
-
     /**
      * Muestra la rueda en pantalla. Si el parámetro es verdadero,
      * también muestra el símbolo dentro de la rueda.

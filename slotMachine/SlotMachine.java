@@ -265,7 +265,6 @@ public class SlotMachine
             }
         }
     }
-
     /**
      * Coloca un símbolo específico en la rueda indicada.
      * El símbolo debe existir entre los símbolos disponibles.
@@ -663,6 +662,7 @@ public class SlotMachine
                     wheels.get(i).setVisibleIndex(index);
                 }
                 ok = true;
+                girada = true;
             }
         }
         if (!isJackpot()){
