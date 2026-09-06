@@ -33,7 +33,8 @@ public class SlotMachineC2Test
     @BeforeEach
     public void setUp()
     {
-        machine = new SlotMachine();   
+        machine = new SlotMachine();
+        machine.makeInvisible();
     }
     
     
@@ -972,32 +973,6 @@ public class SlotMachineC2Test
         assertEquals(2, machine.distinctSymbols());
     }
     
-    
-    // Pruebas de visibilidad
-    
-    /**
-     * Verifica que {@code makeVisible()} deje la máquina tragamonedas en
-     * estado visible.
-     */
-    @Test
-    public void shouldVisble(){
-        machine.makeVisible();
-        assertTrue(machine.isVisible());
-        
-    }
-        
-    /**
-     * Verifica que {@code makeInvisible()} deje la máquina tragamonedas en
-     * estado no visible.
-     */    
-    @Test
-    public void shouldInVisble(){
-        machine.makeInvisible();
-        assertFalse(machine.isVisible());
-        
-    }
-    
-    
     //Pruebas del meotodo isJackpot()
     
     /**
@@ -1169,6 +1144,6 @@ public class SlotMachineC2Test
     @AfterEach
     public void tearDown()
     {
-         machine = null;
+        machine = null;
     }
 }

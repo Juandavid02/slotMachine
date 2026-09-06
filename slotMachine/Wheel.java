@@ -11,6 +11,7 @@ public class Wheel
     private Rectangle wheelFigure;
     private Circle symbolFigure;
     private boolean locked;
+    private boolean figurasCreadas;
     private int currentX;
     private int currentY;
      /**
@@ -31,15 +32,28 @@ public class Wheel
             visibleIndex = 0;
         }
         locked = false;
-        wheelFigure = new Rectangle();
-        symbolFigure = new Circle();
-        wheelFigure.changeSize(70, 70);
         currentX = 0;
         currentY = 0;
-        symbolFigure.moveHorizontal(20);
-        symbolFigure.moveVertical(20);
+        figurasCreadas = false;
     }
     
+    /**
+     * Crea las figuras gráficas de la rueda (el rectángulo y el círculo
+     * del símbolo) la primera vez que se necesitan mostrar o modificar.
+     * Si ya fueron creadas, no hace nada.
+     */
+    private void crearFiguras()
+    {
+        if (!figurasCreadas){
+            wheelFigure = new Rectangle();
+            symbolFigure = new Circle();
+            wheelFigure.changeSize(70, 70);
+            symbolFigure.moveHorizontal(20);
+            symbolFigure.moveVertical(20);
+            figurasCreadas = true;
+        }
+    }
+
     /**
      * Devuelve el índice del símbolo actualmente visible.
      *
@@ -62,22 +76,26 @@ public class Wheel
     
     /**
      * Cambia el color del símbolo circular dentro de la rueda.
+     * Crea las figuras si aún no existían.
      *
      * @param color nuevo color del símbolo (ej. "red", "blue", "green").
      */
     public void changeColor(String color){
+        crearFiguras();
         symbolFigure.changeColor(color);
     }
     
     /**
      * Establece la posición de la rueda en coordenadas (x, y).
      * Mueve tanto el rectángulo como el círculo a la nueva ubicación.
+     * Crea las figuras si aún no existían.
      *
      * @param x nueva posición en el eje X.
      * @param y nueva posición en el eje Y.
      */
     public void setPosition(int x, int y)
     {
+        crearFiguras();
         wheelFigure.moveHorizontal(-currentX);
         wheelFigure.moveVertical(-currentY);
         symbolFigure.moveHorizontal(-currentX);
@@ -126,10 +144,12 @@ public class Wheel
     /**
      * Muestra la rueda en pantalla. Si el parámetro es verdadero,
      * también muestra el símbolo dentro de la rueda.
-     *
+     * Crea las figuras si aún no existían.
+     * 
      * @param flag true para mostrar el símbolo, false para ocultarlo.
      */
     public void makeVisible(boolean flag){
+        crearFiguras();
         wheelFigure.makeVisible();
         if (flag){
             symbolFigure.makeVisible();
@@ -137,10 +157,13 @@ public class Wheel
     }
     
     /**
-     * Oculta la rueda y el símbolo de la pantalla.
+     * Oculta la rueda y el símbolo de la pantalla. Si las figuras nunca
+     * se llegaron a crear no hace nada.
      */
     public void makeInvisible(){
-        wheelFigure.makeInvisible();
-        symbolFigure.makeInvisible();
+        if (figurasCreadas){
+            wheelFigure.makeInvisible();
+            symbolFigure.makeInvisible();
+        }
     }
 }
