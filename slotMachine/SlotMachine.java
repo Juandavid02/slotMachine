@@ -19,6 +19,8 @@ public class SlotMachine
     private boolean ok;
     private boolean cerrada;
     private boolean girada;
+    private boolean figurasCreadas;
+    private String lastMessage;
     private Random random;
     private Rectangle machine;
     private Rectangle brazoHorizontal;
@@ -37,8 +39,7 @@ public class SlotMachine
      * Initially, the machine is visible, and the "last move" state indicates
      * it has been shifted by an equal amount both horizontally and vertically.
      */
-    public SlotMachine()
-    {
+    public SlotMachine(){
         wheels = new ArrayList<Wheel>();
         symbols = new ArrayList<String>();
         visible = true;
@@ -46,32 +47,69 @@ public class SlotMachine
         random = new Random();
         girada = false;
         cerrada = false;
-
-        machine = new Rectangle();
-        machine.changeColor("gray");
-        machine.changeSize(120, 120);
-        machine.moveHorizontal(MARGIN_X);
-        machine.moveVertical(MARGIN_Y);
-        
-        brazoVertical = new Rectangle();
-        brazoVertical.changeColor("gray");
-        brazoVertical.changeSize(100, 15);             
-        brazoVertical.moveHorizontal(MARGIN_X - 30);   
-        brazoVertical.moveVertical(MARGIN_Y + 10);
-        
-        brazoHorizontal = new Rectangle();
-        brazoHorizontal.changeColor("gray");
-        brazoHorizontal.changeSize(15, 30);            
-        brazoHorizontal.moveHorizontal(MARGIN_X - 30);
-        brazoHorizontal.moveVertical(MARGIN_Y + 95);
-
-        perilla = new Circle();
-        perilla.changeColor("red");
-        perilla.changeSize(30);
-        perilla.moveHorizontal(MARGIN_X - 38);
-        perilla.moveVertical(MARGIN_Y);
-
-        actualizar(); 
+        figurasCreadas = false; 
+    }
+    
+    //Ayuda de IA para darnos la de idea de como hacer las figuras sin necesidad de usar el Construstor
+    /**
+     * Crea las figuras gráficas de la máquina (cuerpo, brazos y perilla)
+     * la primera vez que realmente se necesitan mostrar, evitando abrir
+     * la ventana del Canvas si la máquina nunca llega a hacerse visible.
+     */
+    private void crearFiguras(){
+        if (!figurasCreadas){
+            machine = new Rectangle();
+            machine.changeColor("gray");
+            machine.changeSize(120, 120);
+            machine.moveHorizontal(MARGIN_X);
+            machine.moveVertical(MARGIN_Y);
+    
+            brazoVertical = new Rectangle();
+            brazoVertical.changeColor("gray");
+            brazoVertical.changeSize(100, 15);
+            brazoVertical.moveHorizontal(MARGIN_X - 30);
+            brazoVertical.moveVertical(MARGIN_Y + 10);
+    
+            brazoHorizontal = new Rectangle();
+            brazoHorizontal.changeColor("gray");
+            brazoHorizontal.changeSize(15, 30);
+            brazoHorizontal.moveHorizontal(MARGIN_X - 30);
+            brazoHorizontal.moveVertical(MARGIN_Y + 95);
+    
+            perilla = new Circle();
+            perilla.changeColor("red");
+            perilla.changeSize(30);
+            perilla.moveHorizontal(MARGIN_X - 38);
+            perilla.moveVertical(MARGIN_Y);
+    
+            figurasCreadas = true;
+        }
+    }
+    
+    //Idea de IA para que los mensajes los usaramos solamente si estaban visibles guardando el mensaje
+    //y pasandolo como atributo a este metodo
+    /**
+     * Registra un mensaje informativo para el usuario. Si la máquina está
+     * visible, además lo muestra en un diálogo; si está invisible (como
+     * durante las pruebas automáticas), el mensaje solo queda disponible
+     * mediante lastMessage(), sin bloquear la ejecución con una ventana.
+     *
+     * @param message el mensaje a registrar y, si corresponde, mostrar
+     */
+    private void showMessage(String message){
+        lastMessage = message;
+        if (visible){
+            JOptionPane.showMessageDialog(null, message);
+        }
+    }
+    
+    /**
+     * Obtiene el último mensaje informativo generado por la máquina.
+     *
+     * @return el texto del último mensaje, o null si aún no se ha generado ninguno
+     */
+    public String lastMessage(){
+        return lastMessage;
     }
     
     /**
@@ -87,11 +125,11 @@ public class SlotMachine
             Wheel wheel = new Wheel(symbols.size());
             if (pos > wheels.size()){
                 wheels.add(wheel);
-                JOptionPane.showMessageDialog(null, "Se agrego una rueda en la ultima posicion");
+                showMessage("Se agrego una rueda en la ultima posicion");
             }
             else if (pos < 1){
                 wheels.add(0, wheel);
-                JOptionPane.showMessageDialog(null, "Se agrego una rueda en la primera posicion");
+                showMessage("Se agrego una rueda en la primera posicion");
             }
             else {
                 wheels.add(pos - 1, wheel);
@@ -116,12 +154,12 @@ public class SlotMachine
                 if (pos < 1 ){
                     wheels.get(0).makeInvisible();
                     wheels.remove(0);
-                    JOptionPane.showMessageDialog(null, "Se elimino la primera rueda");
+                    showMessage("Se elimino la primera rueda");
                 }
                 else if (pos > wheels.size()){
                     wheels.get(wheels.size() - 1).makeInvisible();                
                     wheels.remove(wheels.size() - 1);
-                    JOptionPane.showMessageDialog(null, "Se elimino la ultima rueda");
+                    showMessage("Se elimino la ultima rueda");
                 }
                 else{
                     wheels.get(pos - 1).makeInvisible();
@@ -130,7 +168,7 @@ public class SlotMachine
                 ok = true;
             }
             else {
-                JOptionPane.showMessageDialog(null, "Accion no permitida: No hay paredes para eliminar");
+                showMessage("Accion no permitida: No hay paredes para eliminar");
                 ok = false;
             }
             actualizar();
@@ -166,7 +204,7 @@ public class SlotMachine
                 if (!(wheel1 == wheel2)){
                     if (wheels.get(wheel1 - 1).isLocked() || wheels.get(wheel2 - 1).isLocked()){
                         ok = false;
-                        JOptionPane.showMessageDialog(null, "Accion no permitida: Una de las ruedas esta bloqueada.");
+                        showMessage("Accion no permitida: Una de las ruedas esta bloqueada.");
                     }
                     else{
                         int idx1 = wheels.get(wheel1 - 1).getVisibleIndex();
@@ -174,18 +212,18 @@ public class SlotMachine
                         wheels.get(wheel1 - 1).setVisibleIndex(idx2);
                         wheels.get(wheel2 - 1).setVisibleIndex(idx1);
                         if (flag){
-                            JOptionPane.showMessageDialog(null, mensaje);
+                            showMessage(mensaje);
                         } 
                         actualizar();
                     }
                 }
                 else {
                     ok = false;
-                    JOptionPane.showMessageDialog(null, "Accion no permitida: Las ruedas son las mismas");
+                    showMessage("Accion no permitida: Las ruedas son las mismas");
                 }
             }
              else{
-                 JOptionPane.showMessageDialog(null, "Accion no permitida: No hay ruedas para cambiar.");
+                showMessage("Accion no permitida: No hay ruedas para cambiar.");
                 ok = false;    
             }     
         }
@@ -218,12 +256,12 @@ public class SlotMachine
                 wheels.get(wheel-1).setLocked(true);
                 ok = true;
                 if (flag){
-                        JOptionPane.showMessageDialog(null, mensaje);
+                        showMessage(mensaje);
                     } 
                 actualizar();
             }
             else{
-                JOptionPane.showMessageDialog(null, "Accion no permitida: No hay ruedas para bloquear.");
+                showMessage("Accion no permitida: No hay ruedas para bloquear.");
                 ok = false;
             }
         }
@@ -257,12 +295,12 @@ public class SlotMachine
                 wheels.get(wheel - 1).setLocked(false);
                 ok = true;
                 if (flag){
-                        JOptionPane.showMessageDialog(null, mensaje);
+                        showMessage(mensaje);
                 } 
                 actualizar();
             }
             else {
-                JOptionPane.showMessageDialog(null, "Accion no permitida: No hay ruedas para desbloquear.");
+                showMessage("Accion no permitida: No hay ruedas para desbloquear.");
                 ok = false;
             }
         }
@@ -290,12 +328,12 @@ public class SlotMachine
                 !color.equals("white") &&
                 !color.equals("orange") &&
                 !color.equals("cyan")){
-                JOptionPane.showMessageDialog(null,
+                showMessage(
                     "Accion no permitida: El color no esta disponible.");
                 ok = false;
             }
             else if (symbols.contains(color)){
-                JOptionPane.showMessageDialog(null, "Accion no permitida: El color ya se encuentra entre las opciones");
+                showMessage("Accion no permitida: El color ya se encuentra entre las opciones");
                 ok = false;
             }        
             else {
@@ -326,7 +364,7 @@ public class SlotMachine
         if (!isCerrada()){
             ok = symbols.remove(color);
             if (!ok){
-                JOptionPane.showMessageDialog(null, "Accion no permitida: No se puede eliminar el símbolo " + color + " porque no existe.");
+                showMessage("Accion no permitida: No se puede eliminar el símbolo " + color + " porque no existe.");
             }
             actualizar();;
         }
@@ -347,13 +385,13 @@ public class SlotMachine
         if (!isCerrada()){
             if (wheels.isEmpty()){
                 ok = false;
-                JOptionPane.showMessageDialog(null, "Accion no permitida: No hay ruletas.");
+                showMessage("Accion no permitida: No hay ruletas.");
                 actualizar();
             }
             else {
                 int index = symbols.indexOf(symbol);
                 if (index == -1){
-                    JOptionPane.showMessageDialog(null, "Accion no permitida: No se encontro el simbolo porque no existe.");
+                    showMessage("Accion no permitida: No se encontro el simbolo porque no existe.");
                     ok = false;
                 }
                 else {
@@ -412,7 +450,7 @@ public class SlotMachine
     {
         if (!isCerrada()){
             if (symbols.isEmpty() || wheels.isEmpty()){
-                JOptionPane.showMessageDialog(null, "Accion no permitida: No se puede girar la ruleta porque esta vacia la ruleta o no hay simbolos disponobles.");
+                showMessage("Accion no permitida: No se puede girar la ruleta porque esta vacia la ruleta o no hay simbolos disponobles.");
                 ok = false;
             }
             else{
@@ -427,10 +465,10 @@ public class SlotMachine
     }
     
     /**
-     * Rota una rueda específica un número determinado de pasos, mostrando
-     * el avance paso a paso para simular el efecto físico de rotación.
-     * La posición de la rueda se ajusta a la primera o última rueda si la
-     * posición indicada está fuera del rango válido
+     * Rota una rueda específica un número determinado de pasos. Si la
+     * máquina está visible, muestra el avance paso a paso con una pequeña
+     * pausa entre cada paso; si está invisible, calcula el resultado final
+     * de inmediato sin tocar el Canvas ni ninguna figura.
      *
      * @param wheel la posición de la rueda que se desea rotar
      * @param steps el número de pasos que debe avanzar la rueda
@@ -438,8 +476,7 @@ public class SlotMachine
     public void spin(int wheel, int steps){
         if (!isCerrada()){
             if (symbols.isEmpty() || wheels.isEmpty()){
-                JOptionPane.showMessageDialog(null,
-                    "Accion no permitida: No se puede rotar la rueda porque esta vacia la ruleta o no hay simbolos disponibles.");
+                showMessage("Accion no permitida: No se puede rotar la rueda porque esta vacia la ruleta o no hay simbolos disponibles.");
                 ok = false;
                 return;
             }
@@ -451,15 +488,16 @@ public class SlotMachine
             }
             Wheel selected = wheels.get(wheel - 1);
             if (selected.isLocked()){
-            JOptionPane.showMessageDialog(null,
-                "Accion no permitida: No se puede rotar la rueda porque esta bloqueada.");
-            ok = false;
-            return;
+                showMessage("Accion no permitida: No se puede rotar la rueda porque esta bloqueada.");
+                ok = false;
+                return;
             }
             for (int i = 0; i < steps; i++){
                 selected.rotate(1, symbols.size());
-                actualizar();
-                Canvas.getCanvas().wait(100);
+                if (visible){
+                    actualizar();
+                    Canvas.getCanvas().wait(100);
+                }
             }
             ok = true;
             isJackpot();
@@ -480,11 +518,11 @@ public class SlotMachine
     public void spin(String[] setSymbols){
         if (!isCerrada()){
             if (wheels.isEmpty()){
-                JOptionPane.showMessageDialog(null, "Accion no permitida: No hay ruedas en la maquina.");
+                showMessage("Accion no permitida: No hay ruedas en la maquina.");
                 ok = false;
             }
             else if (setSymbols.length != wheels.size()){
-                JOptionPane.showMessageDialog(null, "Accion no permitida: La cantidad de simbolos no coincide con la cantidad de ruedas.");
+                showMessage("Accion no permitida: La cantidad de simbolos no coincide con la cantidad de ruedas.");
                 ok = false;
             }
             else {
@@ -495,7 +533,7 @@ public class SlotMachine
                     }
                 }
                 if (!allValid){
-                    JOptionPane.showMessageDialog(null, "Accion no permitida: Uno o mas simbolos indicados no existen.");
+                    showMessage("Accion no permitida: Uno o mas simbolos indicados no existen.");
                     ok = false;
                 }
         
@@ -513,7 +551,7 @@ public class SlotMachine
                         }
                     }
                     if (anyLocked){
-                    JOptionPane.showMessageDialog(null, mensaje);
+                    showMessage(mensaje);
                     }
                     ok = true;
                     girada = true;
@@ -534,7 +572,7 @@ public class SlotMachine
     {
         if (!isCerrada()){
             if (symbols.isEmpty() || wheels.isEmpty()){
-                JOptionPane.showMessageDialog(null, "Accion no permitida: No se puede girar la ruleta porque esta vacia la ruleta o no hay ruletas disponobles.");
+                showMessage("Accion no permitida: No se puede girar la ruleta porque esta vacia la ruleta o no hay ruletas disponobles.");
                 ok = false;
             }
             else{
@@ -602,16 +640,16 @@ public class SlotMachine
     }
     
     /**
-     * Actualiza el estado gráfico completo de la máquina tragamonedas.
-     * 
-     * Redimensiona el cuerpo de la máquina según la cantidad de ruedas
-     * o al tamaño por defecto si no hay ninguna, reposiciona cada rueda
-     * de forma igual y actualiza su color según el símbolo que
-     * tiene actualmente visible. Finalmente, sincroniza la visibilidad de
-     * todos los componentes gráficos (cuerpo, brazos, perilla y ruedas)
-     * dependiendo de visble si esta en true o false.
+     * Actualiza el estado gráfico de la máquina cuando está visible:
+     * crea las figuras si aún no existen, redimensiona el cuerpo según
+     * la cantidad de ruedas, reposiciona cada rueda y actualiza su color.
+     * Si la máquina está invisible, no hace nada (no crea ni toca figuras).
      */
     private void actualizar(){
+        if (!visible){
+            return;
+        }
+        crearFiguras();
         if (wheels.isEmpty()){
             machine.changeSize(120, 120);
         }
@@ -626,24 +664,13 @@ public class SlotMachine
                 }
             }
         }
-    
-        if (visible){
-            machine.makeVisible();
-            brazoVertical.makeVisible();
-            brazoHorizontal.makeVisible();
-            perilla.makeVisible();
-            for (int i=0; i < wheels.size(); i++){
-                wheels.get(i).makeVisible(!symbols.isEmpty());
-            }
-        }
-        else {
-            machine.makeInvisible();
-            brazoVertical.makeInvisible();
-            brazoHorizontal.makeInvisible();
-            perilla.makeInvisible();
-            for (int i=0; i < wheels.size(); i++){
-                wheels.get(i).makeInvisible();
-            }
+
+        machine.makeVisible();
+        brazoVertical.makeVisible();
+        brazoHorizontal.makeVisible();
+        perilla.makeVisible();
+        for (int i=0; i < wheels.size(); i++){
+            wheels.get(i).makeVisible(!symbols.isEmpty());
         }
     }
 
@@ -660,14 +687,21 @@ public class SlotMachine
     }
     
     /**
-     * Hace invisible la máquina tragamonedas junto con todos sus componentes
-     * gráficos (cuerpo, brazos, perilla y ruedas).
-     * Ademas cambia el valor de visble a false
+     * Oculta la máquina tragamonedas. Si las figuras nunca se llegaron a
+     * crear (porque la máquina siempre estuvo invisible), no hace nada.
      */
     public void makeInvisible(){
         if (!isCerrada()){
             visible = false;
-            actualizar();
+            if (figurasCreadas){
+                machine.makeInvisible();
+                brazoVertical.makeInvisible();
+                brazoHorizontal.makeInvisible();
+                perilla.makeInvisible();
+                for (int i = 0; i < wheels.size(); i++){
+                    wheels.get(i).makeInvisible();
+                }
+            }
         }
     }
     
@@ -700,17 +734,29 @@ public class SlotMachine
                     return false;
                 }
             }
-            machine.changeColor("green");
-            brazoHorizontal.changeColor("green");
-            brazoVertical.changeColor("green");
-            perilla.changeColor("yellow");
-            actualizar();
-            JOptionPane.showMessageDialog(null, "¡FELICIDADES HAS GANADO!");
+            celebrarJackpot();
             return true;
         }
         else{
             return false;
         }
+    }
+    
+    /**
+     * Aplica el efecto visual de celebración del jackpot 
+     * y muestra el mensaje de felicitación. Si la máquina está
+     * invisible, no crea ni toca ninguna figura.
+     */
+    private void celebrarJackpot(){
+        if (visible){
+            crearFiguras();
+            machine.changeColor("green");
+            brazoHorizontal.changeColor("green");
+            brazoVertical.changeColor("green");
+            perilla.changeColor("yellow");
+            actualizar();
+        }
+        showMessage("¡FELICIDADES HAS GANADO!");
     }
     
     /**
@@ -721,7 +767,7 @@ public class SlotMachine
      */
     private boolean isCerrada(){
         if (cerrada){
-            JOptionPane.showMessageDialog(null, "Accion no permitida: la maquina fue cerrada con exit() y ya no se puede usar.");
+            showMessage("Accion no permitida: la maquina fue cerrada con exit() y ya no se puede usar.");
             ok = false;
         }
         return cerrada;
