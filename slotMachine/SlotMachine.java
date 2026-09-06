@@ -39,8 +39,7 @@ public class SlotMachine
      * Initially, the machine is visible, and the "last move" state indicates
      * it has been shifted by an equal amount both horizontally and vertically.
      */
-    public SlotMachine()
-    {
+    public SlotMachine(){
         wheels = new ArrayList<Wheel>();
         symbols = new ArrayList<String>();
         visible = true;
@@ -51,6 +50,7 @@ public class SlotMachine
         figurasCreadas = false; 
     }
     
+    //Ayuda de IA para darnos la de idea de como hacer las figuras sin necesidad de usar el Construstor
     /**
      * Crea las figuras gráficas de la máquina (cuerpo, brazos y perilla)
      * la primera vez que realmente se necesitan mostrar, evitando abrir
@@ -86,6 +86,8 @@ public class SlotMachine
         }
     }
     
+    //Idea de IA para que los mensajes los usaramos solamente si estaban visibles guardando el mensaje
+    //y pasandolo como atributo a este metodo
     /**
      * Registra un mensaje informativo para el usuario. Si la máquina está
      * visible, además lo muestra en un diálogo; si está invisible (como
@@ -500,7 +502,7 @@ public class SlotMachine
             ok = true;
             isJackpot();
         }
-}
+    }
     
     /**
      * Establece la configuración completa de la máquina tragamonedas de una
