@@ -72,6 +72,39 @@ public class SlotMachineCC2Test
 
         assertEquals("red", machine.configuration()[0]);
     }
+    
+    
+    
+    /**
+     * Verifica colectivamente que, al forzar una configuración donde todas las ruedas
+     * quedan con el mismo símbolo mediante spin(String[]), el sistema cambie su estado
+     * y detecte exitosamente el jackpot.
+     */
+    @Test
+    public void accordingMsRhShouldDetectJackpotAfterForcedSpin() {
+        machine.addSymbol(1, "red");
+        machine.addSymbol(2, "blue");
+        machine.addWheel(1);
+        machine.addWheel(2);
+        
+        machine.spin(new String[]{"red", "red"});
+        
+        assertTrue(machine.isJackpot());
+    }
+
+    /**
+     * Verifica que delWheel(int pos) elimine la última rueda
+     * cuando la posición indicada es mayor que el número de ruedas.
+     */
+    @Test
+    public void accordingMsRhShouldDeleteLastWheelWhenPositionGreaterThanSize() {
+        machine.addWheel(1);
+        machine.addWheel(2);
+        
+        machine.delWheel(10);
+ 
+        assertEquals(1, machine.configuration().length);
+    }
 
      /**
      * Libera el escenario de pruebas. Se ejecuta después de cada
