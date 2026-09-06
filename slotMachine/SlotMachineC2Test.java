@@ -384,7 +384,7 @@ public class SlotMachineC2Test
     }
 
     /**
-     * Verifica que {@code addSymbol(int pos, String color)} agregue el
+     * Verifica que addSymbol(int pos, String color) agregue el
      * símbolo al principio cuando la posición indicada es menor o igual
      * a uno.
      */
@@ -400,7 +400,7 @@ public class SlotMachineC2Test
     }
 
     /**
-     * Verifica que {@code addSymbol(int pos, String color)} agregue el
+     * Verifica que addSymbol(int pos, String color) agregue el
      * símbolo en la posición intermedia indicada, desplazando los
      * símbolos existentes.
      */
@@ -417,7 +417,7 @@ public class SlotMachineC2Test
     }
     
     /**
-     * Verifica que {@code addSymbol(int pos, String color)} no agregue el
+     * Verifica que addSymbol(int pos, String color) no agregue el
      * símbolo y marque la operación como no exitosa cuando el color
      * indicado no está entre los colores disponibles.
      */    
@@ -431,7 +431,7 @@ public class SlotMachineC2Test
     }
      
     /**
-     * Verifica que {@code addSymbol(int pos, String color)} no agregue un
+     * Verifica que addSymbol(int pos, String color) no agregue un
      * símbolo duplicado y marque la operación como no exitosa cuando el
      * color ya existe entre los símbolos disponibles.
      */
@@ -449,7 +449,7 @@ public class SlotMachineC2Test
     // Pruebas del metodo delSymbol
     
     /**
-    * Verifica que {@code delSymbol(String color)} elimine correctamente
+    * Verifica que delSymbol(String color) elimine correctamente
     * un símbolo que sí existe entre los símbolos disponibles.
     */
     @Test
@@ -463,7 +463,7 @@ public class SlotMachineC2Test
     }
     
     /**
-     * Verifica que {@code delSymbol(String color)} no realice ninguna
+     * Verifica que delSymbol(String color) no realice ninguna
      * eliminación y marque la operación como no exitosa cuando el símbolo
      * indicado no existe entre los símbolos disponibles.
      */ 
@@ -565,7 +565,7 @@ public class SlotMachineC2Test
     // Pruebas del metodo spin(int wheel)
     
     /**
-     * Verifica que {@code spin(int wheel)} no realice ningún giro y marque
+     * Verifica que spin(int wheel) no realice ningún giro y marque
      * la operación como no exitosa cuando no hay ruedas ni símbolos
      * disponibles.
      */
@@ -578,7 +578,7 @@ public class SlotMachineC2Test
     }
     
     /**
-     * Verifica que {@code spin(int wheel)} gire correctamente una rueda
+     * Verifica que spin(int wheel) gire correctamente una rueda
      * existente cuando hay ruedas y símbolos disponibles, dejando la
      * operación como exitosa.
      */
@@ -595,7 +595,7 @@ public class SlotMachineC2Test
     }
     
     /**
-     * Verifica que {@code spin(int wheel)} no modifique el símbolo visible
+     * Verifica que spin(int wheel) no modifique el símbolo visible
      * de una rueda que se encuentra bloqueada.
      */
     @Test
@@ -613,7 +613,7 @@ public class SlotMachineC2Test
     }
     
     /**
-     * Verifica que {@code spin(int wheel)} ajuste la posición a la primera
+     * Verifica que spin(int wheel) ajuste la posición a la primera
      * rueda cuando el valor indicado es menor que uno.
      */
     @Test
@@ -629,7 +629,7 @@ public class SlotMachineC2Test
     }
     
     /**
-     * Verifica que {@code spin(int wheel)} ajuste la posición a la última
+     * Verifica que spin(int wheel) ajuste la posición a la última
      * rueda cuando el valor indicado es mayor que el número de ruedas.
      */
     @Test
@@ -851,7 +851,7 @@ public class SlotMachineC2Test
     // Pruebas del metodo spin()
     
     /**
-     * Verifica que {@code spin()} no realice ningún giro y marque la
+     * Verifica que spin() no realice ningún giro y marque la
      * operación como no exitosa cuando no hay ruedas ni símbolos
      * disponibles.
      */
@@ -864,7 +864,7 @@ public class SlotMachineC2Test
     }
     
     /**
-     * Verifica que {@code spin()} gire todas las ruedas existentes,
+     * Verifica que spin() gire todas las ruedas existentes,
      * dejando cada una con un símbolo válido y la operación como exitosa.
      */
     @Test
@@ -882,7 +882,7 @@ public class SlotMachineC2Test
     }
     
     /**
-     * Verifica que {@code spin()} no modifique el símbolo visible de una
+     * Verifica que spin() no modifique el símbolo visible de una
      * rueda bloqueada, dejando las demás ruedas con un símbolo válido.
      */
     @Test
@@ -935,7 +935,7 @@ public class SlotMachineC2Test
     //Pruebas del metodo configuration()
     
     /**
-     * Verifica que {@code configuration()} retorne un arreglo vacío cuando
+     * Verifica que configuration() retorne un arreglo vacío cuando
      * la máquina tragamonedas no tiene ninguna rueda.
      */
     @Test
@@ -1029,7 +1029,7 @@ public class SlotMachineC2Test
     // Pruebas del metodo exit()
     
     /**
-     * Verifica que {@code exit()} deje la máquina tragamonedas en estado
+     * Verifica que exit() deje la máquina tragamonedas en estado
      * no visible.
      */
     @Test
@@ -1042,7 +1042,7 @@ public class SlotMachineC2Test
     }
     
     /**
-     * Verifica que tras llamar a {@code exit()} {@code makeVisible()} no
+     * Verifica que tras llamar a exit() makeVisible() no
      * logre volver a mostrar la máquina, ya que quedó bloqueada de forma
      * permanente.
      */
@@ -1057,7 +1057,7 @@ public class SlotMachineC2Test
     }
     
     /**
-     * Verifica que, tras llamar a {@code exit()}, no se puedan seguir
+     * Verifica que, tras llamar a exit(), no se puedan seguir
      * agregando ruedas a la máquina.
      */
     @Test
@@ -1072,7 +1072,7 @@ public class SlotMachineC2Test
     }
     
     /**
-     * Verifica que, tras llamar a {@code exit()}, no se puedan seguir
+     * Verifica que, tras llamar a exit(), no se puedan seguir
      * agregando símbolos a la máquina.
      */
     @Test
@@ -1087,7 +1087,7 @@ public class SlotMachineC2Test
     }
     
     /**
-     * Verifica que, tras llamar a {@code exit()}, {@code configuration()}
+     * Verifica que, tras llamar a exit(), configuration()
      * retorne null en vez de revelar el estado final de las ruedas.
      */
     @Test
@@ -1103,7 +1103,7 @@ public class SlotMachineC2Test
     }
     
     /**
-     * Verifica que, tras llamar a {@code exit()}, {@code isJackpot()}
+     * Verifica que, tras llamar a exit(), isJackpot()
      * retorne false aunque las ruedas hubieran quedado en configuración
      * ganadora antes de cerrar la máquina.
      */
