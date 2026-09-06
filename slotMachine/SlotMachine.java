@@ -421,7 +421,7 @@ public class SlotMachine
                 girada = true;
             }
             if (!isJackpot()){
-                    actualizar();
+                actualizar();
             }
         }
     }
