@@ -49,7 +49,23 @@ public class SlotMachine
         cerrada = false;
         figurasCreadas = false; 
     }
-    
+    /**
+     * Crea una nueva máquina tragamonedas con exactamente n ruedas y n
+     * símbolos, inicializada de forma aleatoria. La
+     * máquina queda invisible por defecto, como corresponde a su uso de resolver el problema sin revelar el estado de las ruedas.
+     *
+     * @param n el número de ruedas (y de símbolos) que tendrá la máquina.
+     */
+    public SlotMachine(int n){
+        this();
+        visible = false;
+        for (int i = 0; i < n; i++){
+            symbols.add("S" + i);
+        }
+        for (int i = 1; i <= n; i++){
+            addWheel(i);
+        }
+    }
     //Ayuda de IA para darnos la de idea de como hacer las figuras sin necesidad de usar el Construstor
     /**
      * Crea las figuras gráficas de la máquina (cuerpo, brazos y perilla)
@@ -465,8 +481,8 @@ public class SlotMachine
     }
     
     /**
-     * Rota una rueda específica un número determinado de pasos. Si la
-     * máquina está visible, muestra el avance paso a paso con una pequeña
+     * Rota una rueda específica un número determinado de pasos (ya sea hacia adelante o hacia atras).
+     * Si la máquina está visible, muestra el avance paso a paso con una pequeña
      * pausa entre cada paso; si está invisible, calcula el resultado final
      * de inmediato sin tocar el Canvas ni ninguna figura.
      *
@@ -492,8 +508,10 @@ public class SlotMachine
                 ok = false;
                 return;
             }
-            for (int i = 0; i < steps; i++){
-                selected.rotate(1, symbols.size());
+            int direccion = (steps >= 0) ? 1 : -1;
+            int pasos = Math.abs(steps);
+            for (int i = 0; i < pasos; i++){
+                selected.rotate(direccion, symbols.size());
                 if (visible){
                     actualizar();
                     Canvas.getCanvas().wait(100);
@@ -796,4 +814,5 @@ public class SlotMachine
     {
         return ok;
     }
+    
 }

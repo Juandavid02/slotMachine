@@ -658,6 +658,10 @@ public class SlotMachineC2Test
         machine.spin(1, 3);
     
         assertFalse(machine.ok());
+        
+        
+        machine.spin(1, -3);
+        assertFalse(machine.ok());
     }
     
     /**
@@ -674,7 +678,10 @@ public class SlotMachineC2Test
         machine.addWheel(2);
     
         machine.spin(0, 2);
-    
+        assertTrue(machine.ok());
+        
+        
+        machine.spin(0, -1);
         assertTrue(machine.ok());
     }
     
@@ -692,7 +699,9 @@ public class SlotMachineC2Test
         machine.addWheel(2);
     
         machine.spin(10, 2);
-    
+        assertTrue(machine.ok());
+        
+        machine.spin(10, -2);
         assertTrue(machine.ok());
     }
     
@@ -709,7 +718,9 @@ public class SlotMachineC2Test
         machine.addWheel(1);
     
         machine.spin(1, 2);
-    
+        assertTrue(machine.ok());
+        
+        machine.spin(1, -1);
         assertTrue(machine.ok());
     }
     
@@ -728,8 +739,11 @@ public class SlotMachineC2Test
         machine.lock(1);
     
         machine.spin(1, 3);
-    
         assertFalse(machine.ok());
+        
+        machine.spin(1, -3);
+        assertFalse(machine.ok());
+        
         assertEquals("red", machine.configuration()[0]);
     }
     
