@@ -97,7 +97,4 @@ public class SlotMachineCC2Test
         // Verificar que las ruedas se intercambiaron
         assertTrue(after.equals("blue red"));
     }
-
-    
-    
 }

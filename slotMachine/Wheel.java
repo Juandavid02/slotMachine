@@ -128,7 +128,7 @@ public class Wheel
     }
     
     /**
-     * Rota la rueda un número de pasos hacia adelante, avanzando el índice
+     * Rota la rueda un número de pasos (hacia adelante o hacia atras), avanzando el índice
      * visible circulatmente según el total de símbolos disponibles
      *
      * @param steps número de pasos que debe avanzar la rueda
@@ -138,7 +138,7 @@ public class Wheel
         if (totalSymbols <= 0){
             return;
         }
-        visibleIndex = (visibleIndex + steps) % totalSymbols;
+        visibleIndex = ((visibleIndex + steps) % totalSymbols + totalSymbols) % totalSymbols;
     }
     
     /**
