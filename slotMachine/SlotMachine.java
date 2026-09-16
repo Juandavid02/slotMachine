@@ -398,7 +398,7 @@ public class SlotMachine
             if (!ok){
                 showMessage("Accion no permitida: No se puede eliminar el símbolo " + color + " porque no existe.");
             }
-            actualizar();;
+            actualizar();
         }
     }
     
@@ -535,8 +535,13 @@ public class SlotMachine
                     Canvas.getCanvas().wait(100);
                 }
             }
+            girada = true;
             ok = true;
             isJackpot();
+            if (pasos > 0){
+                girada = true;
+                isJackpot();
+            }
         }
     }
     
@@ -782,6 +787,7 @@ public class SlotMachine
                 }
             }
             celebrarJackpot();
+            exit();
             return true;
         }
         else{
