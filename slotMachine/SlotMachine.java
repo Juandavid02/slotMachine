@@ -524,6 +524,8 @@ public class SlotMachine
                 ok = false;
                 return;
             }
+            // Modificado según la explicación de la IA: se usa el operador ternario (?) para simplificar 
+            // un if-else; define dirección 1 (adelante) si los pasos son >= 0, o -1 (atrás) si son negativos.
             int direccion = (steps >= 0) ? 1 : -1;
             int pasos = Math.abs(steps);
             for (int i = 0; i < pasos; i++){
@@ -842,4 +844,25 @@ public class SlotMachine
         return ok;
     }
     
+    /**
+     * Obtiene el número de símbolos diferentes que se muestran actualmente
+     * en las ruedas de la máquina, es decir, cuántos símbolos distintos
+     * hay en la configuración visible en este momento (no el número
+     * total de símbolos registrados en la máquina).
+     *
+     * @return el número de símbolos distintos actualmente visibles, o 0
+     * si la máquina está cerrada o no tiene ruedas.
+     */
+    public int distinctSymbolsForProblem()
+    {
+        String[] config = configuration();
+        if (config == null){
+            return 0;
+        }
+        java.util.Set<String> vistos = new java.util.HashSet<String>();
+        for (int i = 0; i < config.length; i++){
+            vistos.add(config[i]);
+        }
+        return vistos.size();
+    }
 }
