@@ -2,6 +2,7 @@ import java.util.List;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import java.util.Random;
+import java.util.*; //Poder usar el shuffle
 /**
  * Una máquina tragamonedas que puede contener múltiples ruedas y símbolos.
  * Las ruedas pueden girarse aleatoriamente o configurarse para mostrar
@@ -58,12 +59,27 @@ public class SlotMachine
      */
     public SlotMachine(int n){
         this();
-        visible = false;
-        for (int i = 0; i < n; i++){
-            symbols.add("S" + i);
+        if (n > 8){
+            n = 8;
         }
-        for (int i = 1; i <= n; i++){
-            addWheel(i);
+        else if (n < 1){
+            n = 1;
+        }
+        visible = false;
+        List<String> disponibles = new ArrayList<>();
+        disponibles.add("red");
+        disponibles.add("black");
+        disponibles.add("blue");
+        disponibles.add("yellow");
+        disponibles.add("green");
+        disponibles.add("white");
+        disponibles.add("orange");
+        disponibles.add("cyan");        
+        Collections.shuffle(disponibles); // mezcla el orden al azar IA generativa
+        List<String> color = disponibles.subList(0, n);
+        for (int i = 0; i < n; i++){ 
+            addSymbol(i, color.get(i));
+            addWheel(i+1);
         }
     }
     //Ayuda de IA para darnos la de idea de como hacer las figuras sin necesidad de usar el Construstor
@@ -647,14 +663,25 @@ public class SlotMachine
     }
 
     /**
-     * Obtiene el número de símbolos diferentes disponibles en la máquina
-     * tragamonedas.
+     * Obtiene el número de símbolos diferentes que se muestran actualmente
+     * en las ruedas de la máquina, es decir, cuántos símbolos distintos
+     * hay en la configuración visible en este momento (no el número
+     * total de símbolos registrados en la máquina).
      *
-     * @return el número de símbolos diferentes
+     * @return el número de símbolos distintos actualmente visibles, o 0
+     * si la máquina está cerrada o no tiene ruedas.
      */
     public int distinctSymbols()
     {
-        return symbols.size();
+        String[] config = configuration();
+        if (config == null){
+            return 0;
+        }
+        java.util.Set<String> vistos = new java.util.HashSet<String>();
+        for (int i = 0; i < config.length; i++){
+            vistos.add(config[i]);
+        }
+        return vistos.size();
     }
     
     /**
