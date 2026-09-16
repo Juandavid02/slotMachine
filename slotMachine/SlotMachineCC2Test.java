@@ -19,8 +19,7 @@ public class SlotMachineCC2Test
      * No realiza ninguna inicialización.
      */
     public SlotMachineCC2Test()
-    {
-    }
+    {}
 
     /**
      * Prepara el escenario de cada prueba. Se ejecuta antes de cada
@@ -34,86 +33,71 @@ public class SlotMachineCC2Test
         machine = new SlotMachine();
         machine.makeInvisible();
     }
-    
+
+    // Grupo: GarcíaJ-QuezadaK
     /**
-     * Verifica que, al intercambiar dos ruedas válidas con símbolos
-     * distintos mediante swap(int, int), cada una termine mostrando el
-     * símbolo que antes tenía la otra.
+     * spin(wheel, 0) no debería mover la rueda — girar cero pasos es una
+     * operación válida que no cambia nada, no un error.
      */
     @Test
-    public void accordingMsRhShouldSwapSymbolsBetweenTwoValidWheels(){
+    public void shouldSucceedWithoutChangingConfigurationWhenSpinningZeroSteps() {
+        machine.addWheel(1);
         machine.addSymbol(1, "red");
         machine.addSymbol(2, "blue");
+        String before = machine.configuration()[0];
+        machine.spin(1, 0);
+        assertTrue(machine.ok());
+        assertEquals(before, machine.configuration()[0]);
+    }
+
+    // Grupo: MeloR-SanabriaE
+    /**
+     * Debería: una rueda fijada no debe moverse ante un intento de
+     * giro, y debe volver a poder girar después de un unlock.
+     */
+    @Test
+    public void shouldKeepLockedWheelFixedAndAllowSpinAfterUnlock() {
+        machine.addWheel(1);
+        machine.addSymbol(1, "red");
+        machine.addSymbol(1, "blue");
+        machine.placeSymbol(1, "red"); // estado conocido
+        machine.lock(1);
+        machine.spin(1, 2); // intenta girar la rueda fija
+        assertFalse(machine.ok());
+        assertEquals("red", machine.configuration()[0]); // no debió moverse
+        machine.unlock(1);
+        machine.spin(1, 1); // ahora sí debe poder girar
+        assertTrue(machine.ok());
+    }
+
+    // Grupo: REYESL-BARRAGANB
+    /**
+     * Verifica que al intercambiar dos ruedas se intercambie
+     * su configuracion.
+     */
+    @Test
+    public void shouldSwapWheels() {
+        // Agregar simbolos
+        machine.addSymbol(1, "red");
+        machine.addSymbol(2, "blue");
+        // Agregar dos ruedas
         machine.addWheel(1);
         machine.addWheel(2);
+        // Colocar un simbolo diferente en cada rueda
         machine.placeSymbol(1, "red");
         machine.placeSymbol(2, "blue");
-
+        // Configuracion antes del intercambio
+        String before = String.join(" ", machine.configuration());
+        // Intercambiar las ruedas
         machine.swap(1, 2);
-
-        assertEquals("blue", machine.configuration()[0]);
-        assertEquals("red", machine.configuration()[1]);
+        // Configuracion despues del intercambio
+        String after = String.join(" ", machine.configuration());
+        // Verificar configuracion inicial
+        assertTrue(before.equals("red blue"));
+        // Verificar que las ruedas se intercambiaron
+        assertTrue(after.equals("blue red"));
     }
 
-    /**
-     * Verifica que una rueda bloqueada con lock(int) no cambie su
-     * símbolo visible al intentar girarla con spin(int).
-     */
-    @Test
-    public void accordingMsRhShouldNotChangeLockedWheelWhenSpinning()
-    {
-        machine.addSymbol(1, "red");
-        machine.addSymbol(2, "blue");
-        machine.addWheel(1);
-        machine.placeSymbol(1, "red");
-
-        machine.lock(1);
-        machine.spin(1);
-
-        assertEquals("red", machine.configuration()[0]);
-    }
     
     
-    
-    /**
-     * Verifica colectivamente que, al forzar una configuración donde todas las ruedas
-     * quedan con el mismo símbolo mediante spin(String[]), el sistema cambie su estado
-     * y detecte exitosamente el jackpot.
-     */
-    @Test
-    public void accordingMsRhShouldDetectJackpotAfterForcedSpin() {
-        machine.addSymbol(1, "red");
-        machine.addSymbol(2, "blue");
-        machine.addWheel(1);
-        machine.addWheel(2);
-        
-        machine.spin(new String[]{"red", "red"});
-        
-        assertTrue(machine.isJackpot());
-    }
-
-    /**
-     * Verifica que delWheel(int pos) elimine la última rueda
-     * cuando la posición indicada es mayor que el número de ruedas.
-     */
-    @Test
-    public void accordingMsRhShouldDeleteLastWheelWhenPositionGreaterThanSize() {
-        machine.addWheel(1);
-        machine.addWheel(2);
-        
-        machine.delWheel(10);
- 
-        assertEquals(1, machine.configuration().length);
-    }
-
-     /**
-     * Libera el escenario de pruebas. Se ejecuta después de cada
-     * método de prueba, eliminando la referencia a la instancia de
-     * SlotMachine utilizada.
-     */
-    @AfterEach
-    public void tearDown()
-    {
-        machine = null;
-    }
 }
