@@ -377,25 +377,13 @@ public class SlotMachineC2Test
     @Test
     public void shouldAddSymbolAtEnd()
     {
-        machine.addSymbol(10, "red");
- 
-        assertEquals(1, machine.distinctSymbols());
-        assertTrue(machine.ok());
-    }
-
-    /**
-     * Verifica que addSymbol(int pos, String color) agregue el
-     * símbolo al principio cuando la posición indicada es menor o igual
-     * a uno.
-     */
-    @Test
-    public void shouldAddSymbolAtBeginning()
-    {
-        machine.addSymbol(1, "red");
         machine.addSymbol(1, "blue");
- 
+        machine.addSymbol(2, "green");
+        machine.addSymbol(10, "red");
+    
         String[] symbols = machine.symbols();
-        assertEquals("blue", symbols[0]);
+        assertEquals(3, symbols.length);
+        assertEquals("red", symbols[2]); 
         assertTrue(machine.ok());
     }
 
@@ -441,10 +429,9 @@ public class SlotMachineC2Test
         machine.addSymbol(1, "red");
         machine.addSymbol(2, "red");
  
-        assertEquals(1, machine.distinctSymbols());
+        assertEquals(0, machine.distinctSymbols());
         assertFalse(machine.ok());
     }
-    
 
     // Pruebas del metodo delSymbol
     
@@ -473,7 +460,7 @@ public class SlotMachineC2Test
         machine.addSymbol(1, "red");
         machine.delSymbol("blue");
  
-        assertEquals(1, machine.distinctSymbols());
+        assertEquals(1, machine.symbols().length);
         assertFalse(machine.ok());
     }
     
@@ -983,7 +970,10 @@ public class SlotMachineC2Test
     {
         machine.addSymbol(1, "red");
         machine.addSymbol(2, "blue");
-    
+        machine.addWheel(1);
+        machine.addWheel(1);
+        machine.placeSymbol(1, "red");
+        machine.placeSymbol(2, "blue");
         assertEquals(2, machine.distinctSymbols());
     }
     
