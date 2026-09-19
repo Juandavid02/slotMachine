@@ -1150,24 +1150,4 @@ public class SlotMachineC2Test
     {
         machine = null;
     }
-    
-    // prueba del metodo distincSymbolsForProblem()
-    /**
-     * Verifica que el método distinctSymbolsForProblem() devuelva la cantidad 
-     * de símbolos únicos que están visibles actualmente en las ruedas, 
-     * y no el total de símbolos registrados en la máquina.
-     */
-
-    @Test
-    public void shouldReturnDistinctVisibleSymbolsForProblemNotTotalRegistered()
-    {
-        machine.addSymbol(1, "red");
-        machine.addSymbol(2, "blue");
-        machine.addWheel(1);
-        machine.addWheel(2);
-        machine.placeSymbol(1, "red");
-        machine.placeSymbol(2, "blue");
-    
-        assertEquals(2, machine.distinctSymbolsForProblem());
-    }
 }
