@@ -1,133 +1,164 @@
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 
 /**
- * Resuelve el Problem I (Slot Machine) del ICPC World Finals 2025
+ * Resuelve el Problem (Slot Machine) del ICPC World Finals 2025
  * usando SlotMachine unicamente como testing tool.
  *
- * La unica informacion que se usa de la maquina es distinctSymbols(), es decir
- * cuantos simbolos diferentes se ven en este momento, nunca cual es cada uno.
+ * De la maquina solo se usan SlotMachine(n), spin(wheel, steps) y
+ * distinctSymbols() para resolver, y makeVisible() para simular. Usando
+ * como pista para la solucion la cantidad de simbolos distintos que
+ * se ven en este momento.
  *
  * @author Juan David Rojas and Cesar Morales
  * @version 2.1 (September 2026)
  */
 public class SlotMachineContest
 {
+    private SlotMachine ultimaMaquina;
     /**
-     * Resuelve una maquina de n ruedas sin mostrarla en pantalla.
+     * Resuelve una maquina de n ruedas y n simbolos, inicializada
+     * aleatoriamente, sin mostrarla en pantalla. Guarda la maquina creada
+     * para poder consultarla despues con ultimaMaquina().
      *
-     * @param n el numero de ruedas (y de simbolos) de la maquina
-     * @return la secuencia de movimientos {rueda, pasos} aplicados
+     * @param n el numero de ruedas y de simbolos de la maquina
+     * @return la secuencia de acciones {rueda, pasos} aplicadas hasta
+     * alcanzar el jackpot
      */
     public int[][] solve(int n){
         SlotMachine maquina = new SlotMachine(n);
-        return resolver(maquina);
+        ultimaMaquina = maquina;
+        return resolver(maquina, n);
     }
-
+    
     /**
-     * Resuelve una maquina de n ruedas mostrando el proceso en pantalla.
+     * Simula la solucion sobre una maquina nueva de n ruedas y n simbolos,
+     * inicializada aleatoriamente, mostrando cada accion en pantalla. Esta
+     * maquina es distinta a la usada en solve(n).
      *
-     * @param n el numero de ruedas (y de simbolos) de la maquina
+     * @param n el numero de ruedas y de simbolos de la maquina
      */
     public void simulate(int n){
         SlotMachine maquina = new SlotMachine(n);
         maquina.makeVisible();
-        resolver(maquina);
+        int[][] acciones = resolver(maquina, n);
+        if (acciones.length == 0) {
+            JOptionPane.showMessageDialog(null, "Con menos de dos ruedas no se puede hacer jackpot.");
+        }
     }
-
+    
     /**
-     * Lleva la maquina recibida hasta el jackpot y devuelve los movimientos
-     * usados. El procedimiento tiene tres fases:
+     * Ejecuta el algoritmo de solucion sobre la maquina dada, en tres fases:
+     * (1) ajusta cada rueda para alcanzar que todos los simbolos visibles sean 
+     * distintos, (2) identifica la posicion relativa de cada rueda respecto a la rueda 1
+     * girandola paso a paso, y (3) alinea todas las ruedas con la rueda 1.
+     * Solo usa spin(wheel, steps) y distinctSymbols(). Se detiene en cuanto
+     * detecta el jackpot.
      *
-     * Fase 1: dejar las n ruedas mostrando n simbolos distintos.
-     * Fase 2: descubrir la permutacion usando la rueda 1 como sonda.
-     * Fase 3: alinear todas las ruedas al simbolo de la rueda 1.
-     *
-     * @param maquina la maquina tragamonedas que se desea resolver
-     * @return un arreglo con los movimientos {rueda, pasos} en el orden aplicado
+     * @param maquina la maquina que se va a resolver
+     * @param n el numero de ruedas y de simbolos de la maquina
+     * @return la secuencia de acciones {rueda, pasos}
      */
-    private int[][] resolver(SlotMachine maquina){
+    //Idea de IA generativa para porder tener todo el algoritmo de solucion
+    private int[][] resolver(SlotMachine maquina, int n){
         List<int[]> acciones = new ArrayList<int[]>();
-        // El constructor SlotMachine(int) recorta n al rango [1, 8], por eso se
-        // consulta el tamano real de la maquina y no el parametro recibido.
-        int n = maquina.symbols().length;
         if (n < 2){
             return new int[0][0];
         }
-
-        // ---------- Fase 1: dejar todas las ruedas con simbolos distintos ----------
-        // Al rotar una rueda con las demas fijas, el conteo es |S|+1 si su simbolo
-        // no esta entre los de las otras ruedas y |S| si si lo esta. Por eso,
-        // quedarse en el maximo equivale a llevarla a un simbolo que ninguna otra
-        // rueda tiene, y ese simbolo siempre existe porque hay n simbolos y solo
-        // n-1 ruedas ajenas. Una rueda ya colocada nunca se rompe despues, asi que
-        // basta una pasada.
+    
         for (int t = 2; t <= n; t++){
             int mejorValor = maquina.distinctSymbols();
             int mejorPaso = 0;
             for (int p = 1; p <= n; p++){
                 maquina.spin(t, 1);
                 acciones.add(new int[]{t, 1});
+                if (yaGano(maquina)){
+                    return acciones.toArray(new int[acciones.size()][]);
+                }
                 int actual = maquina.distinctSymbols();
                 if (actual > mejorValor){
                     mejorValor = actual;
                     mejorPaso = p;
                 }
             }
-            // Tras n pasos de a 1 la rueda volvio a su posicion inicial, por lo
-            // que aplicar mejorPaso la deja en la mejor posicion encontrada.
             if (mejorPaso != 0){
                 maquina.spin(t, mejorPaso);
                 acciones.add(new int[]{t, mejorPaso});
+                if (yaGano(maquina)){
+                    return acciones.toArray(new int[acciones.size()][]);
+                }
             }
         }
-
-        // ---------- Fase 2: descubrir la permutacion usando la rueda 1 como sonda ----------
-        // posicion[w] guarda donde esta la rueda w medida como desplazamiento
-        // respecto del simbolo con el que la rueda 1 empezo esta fase.
+        
+        //Fase 2: Implementada con la asistencia de Inteligencia Artificial Generativa.
         int[] posicion = new int[n + 1];
         boolean[] identificada = new boolean[n + 1];
         identificada[1] = true;
         int offsetRueda1 = 0;
-
         for (int s = 1; s <= n - 1; s++){
-            // La rueda 1 avanza de s-1 a s: deja libre el simbolo s-1 y queda
-            // duplicada con la unica rueda que muestra el simbolo s.
             maquina.spin(1, 1);
             acciones.add(new int[]{1, 1});
+            if (yaGano(maquina)){
+                return acciones.toArray(new int[acciones.size()][]);
+            }
             offsetRueda1 = s;
             posicion[1] = s;
-
             for (int w = 2; w <= n; w++){
                 if (identificada[w]){
-                    continue;
+                    continue; //Ia generativa para poder no salir del ciclo pero saltar la iteracion actual
                 }
                 maquina.spin(w, -1);
                 acciones.add(new int[]{w, -1});
+                if (yaGano(maquina)){
+                    return acciones.toArray(new int[acciones.size()][]);
+                }
                 if (maquina.distinctSymbols() == n){
-                    // Solo la rueda que mostraba el simbolo s puede caer en el
-                    // simbolo libre s-1; cualquier otra aterriza sobre uno ya
-                    // ocupado y baja el conteo. El movimiento NO se deshace: al
-                    // dejarla ahi la configuracion vuelve a ser una permutacion
-                    // y el mismo razonamiento sirve en el paso siguiente.
                     posicion[w] = s - 1;
                     identificada[w] = true;
                     break;
                 }
-                // No era: se devuelve la rueda a donde estaba.
                 maquina.spin(w, 1);
                 acciones.add(new int[]{w, 1});
+                if (yaGano(maquina)){
+                    return acciones.toArray(new int[acciones.size()][]);
+                }
             }
         }
-
-        // ---------- Fase 3: alinear todas las ruedas al simbolo de la rueda 1 ----------
+    
         for (int w = 2; w <= n; w++){
             int pasos = (((offsetRueda1 - posicion[w]) % n) + n) % n;
             if (pasos != 0){
                 maquina.spin(w, pasos);
                 acciones.add(new int[]{w, pasos});
+                if (yaGano(maquina)){
+                    return acciones.toArray(new int[acciones.size()][]);
+                }
             }
         }
         return acciones.toArray(new int[acciones.size()][]);
+    }
+    
+    /**
+     * Indica si la maquina ya alcanzo el jackpot usando unicamente
+     * distinctSymbols().
+     * 
+     * @param maquina la maquina que se esta resolviendo
+     * @return true si distinctSymbols() es 1 maquina cerrada por jackpot
+     */
+    private boolean yaGano(SlotMachine maquina){
+        return maquina.distinctSymbols() == 1;
+    }
+    
+    /**
+     * Devuelve la maquina creada en la ultima llamada a solve(n), para poder
+     * verificarla en las pruebas (por ejemplo, con isJackpot()).
+     *
+     * @return la ultima maquina resuelta, o null si aun no se ha llamado
+     * a solve(n)
+     */
+    // Idea de la IA para poder usar la maquina, probarla y saber si si llego a la respuesta
+    public SlotMachine ultimaMaquina(){
+        return ultimaMaquina;
     }
 }

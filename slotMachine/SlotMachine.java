@@ -1,8 +1,10 @@
 import java.util.List;
 import java.util.ArrayList;
-import javax.swing.JOptionPane;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Random;
-import java.util.*; //Poder usar el shuffle
+import java.util.Collections;//Poder usar el shuffle
+import javax.swing.JOptionPane;
 /**
  * Una máquina tragamonedas que puede contener múltiples ruedas y símbolos.
  * Las ruedas pueden girarse aleatoriamente o configurarse para mostrar
@@ -21,12 +23,14 @@ public class SlotMachine
     private boolean cerrada;
     private boolean girada;
     private boolean figurasCreadas;
+    private boolean ganada = false;
     private String lastMessage;
     private Random random;
     private Rectangle machine;
     private Rectangle brazoHorizontal;
     private Rectangle brazoVertical;
     private Circle perilla;
+
     // Variables constantes para dejar espacio tanto arriba como a la derecha
     private static final int MARGIN_X = 60;
     private static final int MARGIN_Y = 30;
@@ -77,9 +81,11 @@ public class SlotMachine
         disponibles.add("cyan");        
         Collections.shuffle(disponibles); // mezcla el orden al azar IA generativa
         List<String> color = disponibles.subList(0, n);
-        for (int i = 0; i < n; i++){ 
-            addSymbol(i, color.get(i));
-            addWheel(i+1);
+        for (int i = 0; i < n; i++){
+            addSymbol(i + 1, color.get(i));
+        }
+        for (int i = 0; i < n; i++){
+            addWheel(i + 1);
         }
     }
     //Ayuda de IA para darnos la de idea de como hacer las figuras sin necesidad de usar el Construstor
@@ -115,6 +121,9 @@ public class SlotMachine
             perilla.moveVertical(MARGIN_Y);
     
             figurasCreadas = true;
+            if (ganada){
+                pintarCelebracion(true);
+            }     
         }
     }
     
@@ -168,6 +177,7 @@ public class SlotMachine
             }
             ok=true;
             actualizar();
+            verificarJackpot();
         }
     }
     
@@ -204,6 +214,7 @@ public class SlotMachine
                 ok = false;
             }
             actualizar();
+            verificarJackpot();
         }
     }
     
@@ -381,6 +392,7 @@ public class SlotMachine
                 ok = true;
             }
             actualizar();
+            verificarJackpot();
         }
     }
     
@@ -394,11 +406,24 @@ public class SlotMachine
     public void delSymbol(String color)
     {
         if (!isCerrada()){
+            int indice = symbols.indexOf(color); //Guardar el indice IA generativa
             ok = symbols.remove(color);
             if (!ok){
                 showMessage("Accion no permitida: No se puede eliminar el símbolo " + color + " porque no existe.");
             }
+            else {
+                for (int i = 0; i < wheels.size(); i++){
+                    int actual = wheels.get(i).getVisibleIndex();
+                    if (actual == indice){
+                        wheels.get(i).setVisibleIndex(0);
+                    }
+                    else if (actual > indice){
+                        wheels.get(i).setVisibleIndex(actual - 1);
+                    }
+                }
+            }
             actualizar();
+            verificarJackpot();
         }
     }
     
@@ -436,9 +461,8 @@ public class SlotMachine
                     wheels.get(wheel-1).setVisibleIndex(index);
                     ok = true;
                     girada = true;
-                    if (!isJackpot()){
-                        actualizar();
-                    }
+                    actualizar();
+                    verificarJackpot();
                 }
             }
         }
@@ -490,12 +514,11 @@ public class SlotMachine
                 ok = true;
                 girada = true;
             }
-            if (!isJackpot()){
-                actualizar();
-            }
+            actualizar();
+            verificarJackpot();
         }
     }
-    
+
     /**
      * Rota una rueda específica un número determinado de pasos (ya sea hacia adelante o hacia atras).
      * Si la máquina está visible, muestra el avance paso a paso con una pequeña
@@ -524,6 +547,8 @@ public class SlotMachine
                 ok = false;
                 return;
             }
+            // Modificado según la explicación de la IA: se usa el operador ternario (?) para simplificar 
+            // un if-else; define dirección 1 (adelante) si los pasos son >= 0, o -1 (atrás) si son negativos.
             int direccion = (steps >= 0) ? 1 : -1;
             int pasos = Math.abs(steps);
             for (int i = 0; i < pasos; i++){
@@ -535,11 +560,7 @@ public class SlotMachine
             }
             girada = true;
             ok = true;
-            isJackpot();
-            if (pasos > 0){
-                girada = true;
-                isJackpot();
-            }
+            verificarJackpot();
         }
     }
     
@@ -596,9 +617,8 @@ public class SlotMachine
                     girada = true;
                 }
             }
-            if (!isJackpot()){
-                actualizar();
-            }
+            actualizar();
+            verificarJackpot();
         }
     }    
     
@@ -620,9 +640,8 @@ public class SlotMachine
                 }
                 girada = true;
                 ok = true;
-                if (!isJackpot()){
-                    actualizar();
-                }
+                actualizar();
+                verificarJackpot();
             }
         }
     }
@@ -682,7 +701,7 @@ public class SlotMachine
         if (config == null){
             return 0;
         }
-        java.util.Set<String> vistos = new java.util.HashSet<String>();
+        Set<String> vistos = new HashSet<String>(); //IA generativa para poder tener el conjunto y no contar los repetidos
         for (int i = 0; i < config.length; i++){
             vistos.add(config[i]);
         }
@@ -733,6 +752,7 @@ public class SlotMachine
         if (!isCerrada()){
             visible = true;
             actualizar();
+            pintarCelebracion(ganada);
         }
     }
     
@@ -765,49 +785,72 @@ public class SlotMachine
     }
     
     /**
-     * Comprueba si la máquina tragamonedas tiene un jackpot.
-     * Un jackpot ocurre cuando hay al menos dos ruedas y todas muestran
-     * el mismo símbolo. Si ocurre un jackpot, la máquina cambia su color
-     * a verde y muestra un mensaje de felicitación.
+     * Indica si la máquina está en jackpot. Es una consulta sin efectos
+     * secundarios: no muestra mensajes, no cambia colores y no cierra la
+     * máquina. Hay jackpot cuando existen al menos dos ruedas, al menos dos
+     * símbolos, ya se giró o colocó algún símbolo, y todas las ruedas
+     * muestran el mismo símbolo. Una máquina cerrada con exit() nunca está
+     * en jackpot.
      *
-     * @return true si todas las ruedas muestran el mismo símbolo y hay
-     * al menos dos ruedas; false en caso contrario
+     * @return true si todas las ruedas muestran el mismo símbolo y se cumplen
+     * las condiciones anteriores; false en caso contrario
      */
     public boolean isJackpot(){
-        String [] config = configuration();
-        if (config == null || !girada || wheels.size() < 2 || symbols.size() < 2){
-            return false;
+        return hayJackpot();
+    }
+
+    /**
+     * Calcula si la configuración actual es un jackpot, sin mostrar mensajes.
+     *
+     * @return true si todas las ruedas muestran el mismo símbolo
+     */
+    private boolean hayJackpot(){
+        return !cerrada && girada && wheels.size() >= 2 && symbols.size() >= 2 && distinctSymbols() == 1;
+    }
+    
+    /**
+     * Compara el estado actual con el anterior (ganada) y reacciona solo
+     * cuando cambia: al pasar a jackpot aplica los colores de celebración y
+     * muestra el mensaje una vez; al salir del jackpot restaura los colores
+     * normales. Si el estado no cambia, no hace nada.
+     */
+    private void verificarJackpot(){
+        boolean actual = hayJackpot();
+        if (actual && !ganada){
+            ganada = true;
+            pintarCelebracion(true);
+            showMessage("¡FELICIDADES HAS GANADO!");
         }
-        else if (config.length > 0){
-            for (int i=1; i < config.length; i++){
-                if (!config[i].equals(config[0])){
-                    return false;
-                }
-            }
-            celebrarJackpot();
-            exit();
-            return true;
-        }
-        else{
-            return false;
+        else if (!actual && ganada){
+            ganada = false;
+            pintarCelebracion(false);
         }
     }
     
     /**
-     * Aplica el efecto visual de celebración del jackpot 
-     * y muestra el mensaje de felicitación. Si la máquina está
-     * invisible, no crea ni toca ninguna figura.
+     * Cambia el color del cuerpo, los brazos y la perilla según se esté
+     * celebrando un jackpot o no. Si las figuras aún no se han creado, no hace
+     * nada (crearFiguras aplica el color correcto al crearlas).
+     *
+     * @param celebrando true para los colores de jackpot, false para los normales
      */
-    private void celebrarJackpot(){
-        if (visible){
-            crearFiguras();
-            machine.changeColor("green");
-            brazoHorizontal.changeColor("green");
-            brazoVertical.changeColor("green");
-            perilla.changeColor("yellow");
-            actualizar();
+    private void pintarCelebracion(boolean celebrando){
+        if (figurasCreadas && visible){
+            String colorCuerpo = celebrando ? "green" : "gray";
+            String colorPerilla = celebrando ? "yellow" : "red";
+            machine.changeColor(colorCuerpo);
+            brazoHorizontal.changeColor(colorCuerpo);
+            brazoVertical.changeColor(colorCuerpo);
+            perilla.changeColor(colorPerilla);
+            // Redibujar las ruedas encima del cuerpo
+            if (!symbols.isEmpty()){
+                for (int i = 0; i < wheels.size(); i++){
+                    int idx = wheels.get(i).getVisibleIndex();
+                    wheels.get(i).changeColor(symbols.get(idx));
+                    wheels.get(i).makeVisible(true);
+                }
+            }
         }
-        showMessage("¡FELICIDADES HAS GANADO!");
     }
     
     /**
@@ -847,5 +890,4 @@ public class SlotMachine
     {
         return ok;
     }
-    
 }

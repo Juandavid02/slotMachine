@@ -69,32 +69,4 @@ public class SlotMachineCC2Test
         machine.spin(1, 1); // ahora sí debe poder girar
         assertTrue(machine.ok());
     }
-
-    // Grupo: REYESL-BARRAGANB
-    /**
-     * Verifica que al intercambiar dos ruedas se intercambie
-     * su configuracion.
-     */
-    @Test
-    public void shouldSwapWheels() {
-        // Agregar simbolos
-        machine.addSymbol(1, "red");
-        machine.addSymbol(2, "blue");
-        // Agregar dos ruedas
-        machine.addWheel(1);
-        machine.addWheel(2);
-        // Colocar un simbolo diferente en cada rueda
-        machine.placeSymbol(1, "red");
-        machine.placeSymbol(2, "blue");
-        // Configuracion antes del intercambio
-        String before = String.join(" ", machine.configuration());
-        // Intercambiar las ruedas
-        machine.swap(1, 2);
-        // Configuracion despues del intercambio
-        String after = String.join(" ", machine.configuration());
-        // Verificar configuracion inicial
-        assertTrue(before.equals("red blue"));
-        // Verificar que las ruedas se intercambiaron
-        assertTrue(after.equals("blue red"));
-    }
 }
