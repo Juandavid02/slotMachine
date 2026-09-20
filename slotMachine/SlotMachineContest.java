@@ -41,6 +41,7 @@ public class SlotMachineContest
      */
     public void simulate(int n){
         SlotMachine maquina = new SlotMachine(n);
+        ultimaMaquina = maquina; 
         maquina.makeVisible();
         int[][] acciones = resolver(maquina, n);
         if (acciones.length == 0) {
