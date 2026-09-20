@@ -836,7 +836,7 @@ public class SlotMachine
      */
     private void pintarCelebracion(boolean celebrando){
         if (figurasCreadas && visible){
-            String colorCuerpo = celebrando ? "green" : "gray";
+            String colorCuerpo = celebrando ? "green" : "gray"; //Operador ternario idea de IA para dismuir codigo
             String colorPerilla = celebrando ? "yellow" : "red";
             machine.changeColor(colorCuerpo);
             brazoHorizontal.changeColor(colorCuerpo);
